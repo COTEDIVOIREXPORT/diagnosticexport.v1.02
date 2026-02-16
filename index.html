@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OUTIL DE DIAGNOSTIC EXPORT - AGENCE CÔTE D'IVOIRE EXPORT</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* =========================================
+           CHARTE GRAPHIQUE CÔTE D'IVOIRE EXPORT
+           ========================================= */
+        :root { 
+            --ci-green: #009E60;   /* Vert Drapeau */
+            --ci-orange: #F77F00;  /* Orange Drapeau */
+            --ci-white: #FFFFFF;   /* Blanc */
+            
+            --primary: #007A4D;    /* Un vert un peu plus foncé pour le texte/titres */
+            --accent: #F77F00;     /* Orange pour les actions */
+            --bg: #F4F7F6;         /* Fond très léger */
+            --text: #333333;
+            --danger: #c0392b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); min-height: 100vh; padding: 20px; color: var(--text); }
+        
+        .main-container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: var(--ci-white); 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 800px; 
+            border-top: 5px solid var(--ci-orange); /* Touche Orange en haut */
+        }
+        
+        /* HEADER AVEC LOGO */
+        header { 
+            background: var(--ci-white); 
+            padding: 15px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid #eee;
+        }
+        
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand-area img {
+            height: 60px; /* Taille logo */
+            width: auto;
+        }
+
+        .brand-text h1 { 
+            font-size: 1.1rem; 
+            font-weight: 800; 
+            color: var(--primary); 
+            text-transform: uppercase; 
+            line-height: 1.2;
+        }
+        .brand-text span {
+            color: var(--ci-orange);
+            font-size: 0.9rem;
+        }
+
+        .header-controls { display: flex; gap: 20px; align-items: center; }
+        .btn-reset { 
+            background: white; 
+            border: 1px solid #ddd; 
+            color: #666; 
+            padding: 6px 15px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 0.85rem; 
+            transition: 0.2s; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px; 
+        }
+        .btn-reset:hover { background: var(--danger); color: white; border-color: var(--danger); }
+        
+        /* PROGRESS BAR */
+        .progress-container { background: white; padding: 15px 40px; display: flex; justify-content: center; gap: 20px; border-bottom: 1px solid #f0f0f0; }
+        .step { display: flex; align-items: center; opacity: 0.6; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
+        .step.active { opacity: 1; color: var(--ci-orange); border-bottom: 3px solid var(--ci-orange); }
+
+        /* CONTENU */
+        .content { padding: 40px; flex: 1; overflow-y: auto; background: #fff; }
+        .view-section { display: none; animation: fadeIn 0.4s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* FORMULAIRES */
+        .form-section-title { color: var(--primary); font-size: 1.1rem; font-weight: 700; margin: 25px 0 15px 0; padding-bottom: 5px; border-bottom: 2px solid #eee; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; color: #555; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; transition: 0.3s; }
+        .form-control:focus { border-color: var(--ci-orange); outline: none; }
+        select.form-control { background: #fff; }
+        
+        .radio-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .radio-label { display: flex; align-items: center; cursor: pointer; font-size: 0.9rem; background: #f9f9f9; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; transition:0.2s; }
+        .radio-label:hover { background: #fff8e1; border-color: var(--ci-orange); }
+        .radio-label input { margin-right: 8px; }
+
+        /* QUESTIONNAIRE */
+        .part-header { background: var(--primary); color: white; padding: 12px; text-align: center; font-weight: bold; margin-top: 40px; margin-bottom: 20px; border-radius: 6px; }
+        .section-header { color: var(--primary); padding: 10px 0; margin: 20px 0 15px 0; border-bottom: 2px solid var(--ci-orange); display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1.1rem; }
+        
+        .q-card { border-left: 4px solid #ddd; padding: 15px 20px; margin-bottom: 20px; background: #fcfcfc; transition: 0.2s; }
+        .q-card:hover { border-left-color: var(--ci-orange); background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .q-text { font-weight: 600; margin-bottom: 10px; display: block; color: #333; line-height: 1.4; }
+        
+        .opt-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .opt-btn { padding: 6px 14px; background: #fff; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; display: flex; align-items: center; }
+        .opt-btn:hover { border-color: var(--ci-orange); color: var(--ci-orange); }
+        .opt-btn.selected { background: var(--ci-orange); color: white; border-color: var(--ci-orange); }
+        .opt-btn input { margin-right: 8px; }
+        .sub-options { margin-top: 10px; padding: 10px; background: #fffbf0; border-left: 2px solid var(--ci-orange); display: none; }
+
+        /* RÉSULTATS */
+        .dashboard-layout { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+        .score-card { background: var(--primary); color: white; padding: 30px; border-radius: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; border: 8px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; margin: 15px 0; }
+        .score-verdict { background: white; color: var(--primary); padding: 5px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
+        
+        .diag-section-header { background: #f0fdf4; color: var(--primary); padding: 12px 20px; font-weight: 800; border-left: 5px solid var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-radius: 0 6px 6px 0; font-size: 1.1rem; }
+        
+        .diag-card { background: white; border-radius: 8px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); border-left: 6px solid #ccc; position: relative; }
+        .diag-card.critical { border-left-color: var(--danger); background: #fffbfb; }
+        .diag-card.structural { border-left-color: var(--ci-orange); background: #fffcf8; }
+        
+        .diag-tag { position: absolute; top: 20px; right: 20px; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tag-crit { color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb; }
+        .tag-struct { color: #856404; background: #fff3cd; border: 1px solid #ffeeba; }
+        
+        .diag-card h4 { margin-bottom: 15px; font-size: 1.1rem; color: #333; padding-right: 120px; line-height: 1.4; font-weight: 700; }
+        .diag-detail { font-size: 0.95rem; color: #444; }
+        .diag-block { margin-bottom: 12px; }
+        .diag-block strong { display: block; color: var(--primary); margin-bottom: 5px; font-size: 0.9rem; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
+        .diag-block ul { margin-left: 20px; margin-top: 5px; list-style-type: disc; }
+        .diag-block li { margin-bottom: 4px; line-height: 1.5; }
+
+        .bar-wrapper { margin-bottom: 12px; }
+        .bar-labels { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+        .bar-bg { background: #eee; height: 8px; border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; transition: width 1s ease; border-radius: 4px; }
+
+        .actions { padding: 20px 40px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; background: #f9f9f9; }
+        .btn { padding: 10px 25px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; }
+        
+        .btn-prev { background: #95a5a6; }
+        .btn-prev:hover { background: #7f8c8d; }
+        
+        .btn-next { background: var(--ci-orange); }
+        .btn-next:hover { background: #e67e22; }
+        
+        .btn-print { background: var(--primary); margin-left: auto; }
+        .btn-print:hover { background: #006640; }
+        
+        .btn-save { background: var(--ci-green); margin-right: 10px; }
+        .btn-save:hover { background: #008f55; }
+
+        /* =========================================
+           STYLES D'IMPRESSION (V7.0 Preservation)
+           ========================================= */
+        @media print { 
+            body, html { background: white !important; margin: 0 !important; padding: 0 !important; width: 100% !important; height: auto !important; overflow: visible !important; }
+            .main-container { box-shadow: none !important; max-width: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; border-radius: 0 !important; display: block !important; border: none !important; }
+            .actions, .progress-container, .header-controls, .btn, #view-1, #view-2 { display: none !important; } 
+            .content { padding: 0 !important; overflow: visible !important; display: block !important; }
+            #view-3 { display: block !important; animation: none !important; }
+            .dashboard-layout { display: block !important; }
+            .dashboard-layout > div { width: 100% !important; margin-bottom: 30px !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .score-card, .diag-section-block, .diag-card { break-inside: avoid !important; page-break-inside: avoid !important; }
+            h2, h3, h4 { break-after: avoid !important; page-break-after: avoid !important; }
+            
+            header { padding: 10px 0 !important; background: white !important; border-bottom: 2px solid var(--ci-orange); margin-bottom: 20px; display: block !important; text-align: center; }
+            .brand-area { display: block !important; text-align: center; margin: 0 auto; }
+            .brand-area img { height: 80px; margin-bottom: 10px; }
+            canvas { max-height: 400px !important; margin: 0 auto !important; display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <header>
+        <div class="brand-area">
+            <img src="https://cotedivoirexport.ci/wp-content/uploads/2024/03/cropped-LOGO-CI-EXPORT-1.png" alt="Logo CI Export">
+            <div class="brand-text">
+                <h1>OUTIL DE DIAGNOSTIC EXPORT</h1>
+                <span>AGENCE CÔTE D'IVOIRE EXPORT</span>
+            </div>
+        </div>
+        <div class="header-controls">
+            <button class="btn-reset" onclick="resetDiagnostic()">🔄 Réinitialiser</button>
+        </div>
+    </header>
+
+    <div class="progress-container">
+        <div class="step active" id="step-ind-1">1. Profil</div>
+        <div class="step" id="step-ind-2">2. Questionnaire</div>
+        <div class="step" id="step-ind-3">3. Résultats</div>
+    </div>
+
+    <div class="content">
+        <div id="view-1" class="view-section active">
+            <h2 style="color:var(--primary); margin-bottom:20px;">I. IDENTIFICATION DE L'ENTREPRISE</h2>
+            
+            <div class="form-section-title">a) Information générale</div>
+            <div class="form-grid">
+                <div class="form-group"><label>Dénomination sociale :</label><input type="text" class="form-control" id="denomination"></div>
+                <div class="form-group"><label>Année de création :</label><input type="number" class="form-control" id="annee_creation"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Forme juridique :</label>
+                <div class="radio-container">
+                    <label class="radio-label"><input type="radio" name="juridique" value="SARL" onchange="toggleAutreJuridique()"> SARL</label>
+                    <label class="radio-label"><input type="radio" name="juridique" value="SA" onchange="toggleAutreJuridique()"> SA</label>
+                    <label class="radio-label"><input type="radio" name="juridique" value="SNC" onchange="toggleAutreJuridique()"> SNC</label>
+                    <label class="radio-label"><input type="radio" name="juridique" value="SCOOP" onchange="toggleAutreJuridique()"> SCOOP</label>
+                    <label class="radio-label"><input type="radio" name="juridique" value="Physique" onchange="toggleAutreJuridique()"> Personne Physique</label>
+                    <label class="radio-label"><input type="radio" name="juridique" value="Autre" onchange="toggleAutreJuridique()"> Autre</label>
+                </div>
+                <div id="juridique-autre-container" style="display:none; margin-top:10px;">
+                    <input type="text" class="form-control" id="juridique-autre" placeholder="Précisez la forme juridique">
+                </div>
+            </div>
+
+            <div class="form-group"><label>Siège social :</label><input type="text" class="form-control" id="siege"></div>
+            <div class="form-grid">
+                <div class="form-group"><label>N° RCCM :</label><input type="text" class="form-control" id="rccm"></div>
+                <div class="form-group"><label>N° Compte Contribuable :</label><input type="text" class="form-control" id="cc"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Secteur d’activité :</label>
+                <select class="form-control" id="secteur"></select>
+            </div>
+
+            <div class="form-section-title">b) Dirigeant</div>
+            <div class="form-grid">
+                <div class="form-group"><label>Nom et prénoms :</label><input type="text" class="form-control" id="dirigeant"></div>
+                <div class="form-group"><label>Fonction :</label><input type="text" class="form-control" id="fonction"></div>
+            </div>
+            
+            <div class="form-section-title">c) Taille et activité</div>
+            <div class="form-grid">
+                <div class="form-group"><label>Chiffre d’affaires :</label><input type="text" class="form-control" id="ca"></div>
+                <div class="form-group"><label>Part du CA export :</label><input type="text" class="form-control" id="part_export"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Marchés actuels (Maintenez Ctrl pour sélectionner plusieurs) :</label>
+                <select class="form-control" id="marches" multiple size="5"></select>
+            </div>
+        </div>
+
+        <div id="view-2" class="view-section">
+            <h2 style="color:var(--primary); text-align:center; margin-bottom:20px;">QUESTIONNAIRE D'ANALYSE</h2>
+            <div id="quiz-content"></div>
+        </div>
+
+        <div id="view-3" class="view-section">
+            <div style="text-align:right; margin-bottom:10px;">
+                <button id="btn-save" class="btn btn-save" onclick="saveToGoogleSheets()">☁️ Sauvegarder</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ Exporter PDF</button>
+            </div>
+            
+            <div id="report-header" style="text-align:center; margin-bottom:30px; border-bottom:1px solid #eee; padding-bottom:20px;"></div>
+
+            <div class="dashboard-layout">
+                <div>
+                    <div class="score-card">
+                        <div style="text-transform:uppercase; letter-spacing:1px; font-size:0.8rem; opacity:0.8;">Score Global</div>
+                        <div class="score-circle" id="final-score">0%</div>
+                        <div id="verdict" class="score-verdict">EN ATTENTE</div>
+                    </div>
+                    <div style="background:white; border:1px solid #eee; border-radius:8px; padding:20px; margin-top:20px;">
+                        <h4 style="margin-bottom:15px; color:#555;">PERFORMANCE PAR AXE</h4>
+                        <div id="bars-container"></div>
+                    </div>
+                    <div style="background:white; border:1px solid #eee; border-radius:8px; padding:20px; margin-top:20px; display:flex; justify-content:center;">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color:var(--primary); margin-bottom:10px; border-bottom:3px solid var(--ci-orange); padding-bottom:5px; display:inline-block;">
+                        📋 DIAGNOSTIC DÉTAILLÉ
+                    </h3>
+                    <div id="diagnostic-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-prev" id="btn-prev" onclick="changeStep(-1)" style="display:none;">Retour</button>
+        <div style="flex:1;"></div>
+        <button class="btn btn-next" id="btn-next" onclick="changeStep(1)">Suivant >></button>
+    </div>
+</div>
+
+<script>
+
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz84ob6_tZyALsoMNC01d5NQzRgk7ZJKCMTSDJ9428_G_MnwNYcyFOgxhfmONr_E67A/exec";
+
+    let savedScores = {}; 
+    let savedDiagnosis = [];
+    
+    const COUNTRIES = ["Afrique du Sud", "Algérie", "Allemagne", "Angola", "Arabie saoudite", "Argentine", "Australie", "Belgique", "Bénin", "Brésil", "Burkina Faso", "Cameroun", "Canada", "Chine", "Congo", "Corée du Sud", "Côte d'Ivoire", "Égypte", "Émirats arabes unis", "Espagne", "États-Unis", "France", "Gabon", "Ghana", "Guinée", "Inde", "Indonésie", "Italie", "Japon", "Kenya", "Mali", "Maroc", "Mexique", "Nigeria", "Pays-Bas", "Pologne", "Portugal", "Royaume-Uni", "Russie", "Sénégal", "Singapour", "Suisse", "Togo", "Tunisie", "Turquie", "Vietnam", "Autre"];
+    const SECTORS = ["Agriculture", "Agroalimentaire", "Artisanat", "Automobile", "BTP / Construction", "Chimie / Parachimie", "Commerce / Distribution", "Cosmétique", "Énergie / Mines", "Finance / Assurance", "Industrie manufacturière", "Informatique / Télécoms", "Santé / Pharma", "Services aux entreprises", "Textile / Habillement", "Tourisme / Hôtellerie", "Transport / Logistique", "Autre"];
+
+    // DB Diagnostics (TEXTES ORIGINAUX COMPLETS)
+    const DIAGNOSTIC_DB = {
+        "4": { 
+            problem: "L’entreprise est en situation de saturation ou de sous-activité critique.",
+            type: "CRITICAL", 
+            why: "Si l’entreprise est déjà à >75% de capacité, elle n’a aucune marge d’absorption d’une commande export.",
+            impact: "<ul><li>Incapacité à honorer commandes</li><li>Retards contractuels</li><li>Perte de crédibilité internationale</li></ul>", 
+            fix: "<ul><li>Audit capacité réelle</li><li>Plan d’extension progressive</li><li>Sous-traitance sécurisée</li><li>Investissement productif planifié</li></ul>" 
+        },
+        "8": { 
+            problem: "Incapacité à absorber une hausse de production (+30%) sans surcoût majeur.",
+            type: "CRITICAL", 
+            why: "L’export génère des pics imprévus. Si l’entreprise ne peut absorber une hausse, elle n’est pas scalable.",
+            impact: "<ul><li>Perte d’opportunités</li><li>Refus de contrats</li><li>Explosion des coûts unitaires</li></ul>", 
+            fix: "<ul><li>Plan de montée en charge</li><li>Accords fournisseurs anticipés</li><li>Stock stratégique</li></ul>" 
+        },
+        "11": { 
+            problem: "Absence de système de traçabilité complet (matières, process, distribution).",
+            type: "CRITICAL", 
+            why: "Indispensable pour agroalimentaire, cosmétique, pharma, et exigence croissante partout.",
+            impact: "<ul><li>Blocage douanier immédiat</li><li>Rejet sanitaire</li><li>Retrait produit impossible (risque légal)</li></ul>", 
+            fix: "<ul><li>Mise en place traçabilité lot par lot</li><li>Digitalisation des fiches suiveuses</li><li>Procédures écrites</li></ul>" 
+        },
+        "12": { 
+            problem: "Absence d'un contrôle qualité formel et rigoureux.",
+            type: "CRITICAL", 
+            why: "Sans contrôle qualité structuré, le risque de non-conformité à l'arrivée est maximal.",
+            impact: "<ul><li>Litiges commerciaux</li><li>Retours marchandise coûteux</li><li>Perte immédiate de l'importateur</li></ul>", 
+            fix: "<ul><li>Procédures QC formalisées</li><li>Fiches de contrôle à chaque étape</li><li>Responsable qualité désigné</li></ul>" 
+        },
+        "13": { 
+            problem: "Infrastructures de production non conformes aux standards internationaux.",
+            type: "CRITICAL", 
+            why: "C'est une condition sine qua non d’accès aux marchés réglementés (UE, USA...).",
+            impact: "<ul><li>Non conformité produit</li><li>Impossibilité d'obtenir les certifications</li><li>Fermeture des marchés structurés</li></ul>", 
+            fix: "<ul><li>Audit technique immédiat</li><li>Plan de mise à niveau des équipements</li></ul>" 
+        },
+        "16": { 
+            problem: "Le coût de revient export n'est pas calculé précisément.",
+            type: "CRITICAL", 
+            why: "Sans coût export maîtrisé, le prix de vente est fixé à l'aveugle.",
+            impact: "<ul><li>Vente à perte (marge négative)</li><li>Prix non compétitif sur le marché cible</li><li>Mauvaise base de négociation</li></ul>", 
+            fix: "<ul><li>Intégration transport, assurance, douane</li><li>Tableau de coût complet par Incoterm (Reverse Costing)</li></ul>" 
+        },
+        "17": { 
+            problem: "Ressources financières insuffisantes pour soutenir le projet export.",
+            type: "CRITICAL", 
+            why: "L’export consomme du cash (BFR) avant d'en générer.",
+            impact: "<ul><li>Projet stoppé en cours de route</li><li>Incapacité à financer la prospection</li><li>Faillite potentielle</li></ul>", 
+            fix: "<ul><li>Plan de trésorerie export sur 12 mois</li><li>Recherche financement dédié (BPI, Banques)</li></ul>" 
+        },
+        "19": { 
+            problem: "Incapacité à financer les délais de paiement clients (60-90j).",
+            type: "CRITICAL", 
+            why: "À l’international, les délais de paiement (60–120 jours) sont la norme commerciale.",
+            impact: "<ul><li>Tension de trésorerie majeure</li><li>Obligation de refuser des clients sérieux</li></ul>", 
+            fix: "<ul><li>Mise en place d'Assurance-crédit</li><li>Contrat d'Affacturage export</li></ul>" 
+        },
+        "23": { 
+            problem: "Comptabilité non validée ou non fiable.",
+            type: "CRITICAL", 
+            why: "C'est la condition de base pour toute crédibilité bancaire.",
+            impact: "<ul><li>Refus systématique de crédit bancaire</li><li>Perte de crédibilité face aux partenaires financiers</li></ul>", 
+            fix: "<ul><li>Mise à jour comptable immédiate</li><li>Certification par expert-comptable</li></ul>" 
+        },
+        "27": { 
+            problem: "Absence de personne dédiée ou compétente pour l'export.",
+            type: "CRITICAL", 
+            why: "Sans responsable export (même à temps partiel), la gestion est amateur.",
+            impact: "<ul><li>Erreurs documentaires graves</li><li>Mauvaise gestion de la relation client</li><li>Délais de réponse trop longs</li></ul>", 
+            fix: "<ul><li>Nomination d'un responsable export</li><li>Fiche de poste claire et objectifs définis</li></ul>" 
+        },
+        "30": { 
+            problem: "Les marchés cibles ne sont pas clairement identifiés.",
+            type: "CRITICAL", 
+            why: "Exporter 'partout' revient à n'exporter 'nulle part'. C'est de la navigation à vue.",
+            impact: "<ul><li>Dépenses marketing inutiles (saupoudrage)</li><li>Prospection inefficace</li><li>Epuisement des équipes</li></ul>", 
+            fix: "<ul><li>Étude de marché structurée</li><li>Segmentation et choix de 1 ou 2 pays prioritaires</li></ul>" 
+        },
+        "32": { 
+            problem: "Aucun besoin spécifique identifié sur les marchés visés.",
+            type: "CRITICAL", 
+            why: "Sans besoin identifié, l'export est illusoire. On ne vend pas ce qu'on veut, mais ce que le marché attend.",
+            impact: "<ul><li>Zéro vente</li><li>Mauvais positionnement</li><li>Echec commercial garanti</li></ul>", 
+            fix: "<ul><li>Validation terrain immédiate</li><li>Étude de la demande réelle</li><li>Test marché (POC)</li></ul>" 
+        },
+        "36": { 
+            problem: "Absence de réseau de distributeurs ou partenaires locaux.",
+            type: "CRITICAL", 
+            why: "Sans relais local, la pénétration du marché est impossible à distance.",
+            impact: "<ul><li>Faible présence commerciale</li><li>Coûts marketing prohibitifs</li><li>Aucune remontée terrain</li></ul>", 
+            fix: "<ul><li>Identification active de partenaires</li><li>Signature de contrats de distribution</li></ul>" 
+        },
+        "44": { 
+            problem: "Emballage non conforme aux exigences du marché cible.",
+            type: "CRITICAL", 
+            why: "La non-conformité (étiquetage, langue, normes) entraîne un blocage immédiat.",
+            impact: "<ul><li>Saisie de la marchandise en douane</li><li>Amendes lourdes</li><li>Destruction des produits</li></ul>", 
+            fix: "<ul><li>Adaptation packaging pays par pays</li><li>Vérification réglementaire stricte</li></ul>" 
+        },
+        "45": { 
+            problem: "Conditionnement inadapté aux contraintes du transport international.",
+            type: "CRITICAL", 
+            why: "Le transport international (maritime/aérien) impose des contraintes physiques fortes.",
+            impact: "<ul><li>Casse et avaries</li><li>Pertes financières (non remboursées si emballage insuffisant)</li><li>Réclamations clients</li></ul>", 
+            fix: "<ul><li>Tests de transport</li><li>Renforcement emballage (Cartons double cannelure, Palettes)</li></ul>" 
+        },
+        "46": { 
+            problem: "Méconnaissance des Incoterms et de leurs impacts.",
+            type: "CRITICAL", 
+            why: "Les Incoterms définissent le transfert de frais et de risques. Ne pas les connaître est dangereux.",
+            impact: "<ul><li>Mauvaise fixation du prix de vente</li><li>Responsabilités juridiques mal assumées en cas de litige</li></ul>", 
+            fix: "<ul><li>Formation Incoterms 2020 obligatoire</li><li>Intégration précise dans les devis</li></ul>" 
+        },
+        "48": { 
+            problem: "Ignorance des réglementations douanières des marchés cibles.",
+            type: "CRITICAL", 
+            why: "L'ignorance ne protège pas du blocage. Chaque pays a ses barrières.",
+            impact: "<ul><li>Marchandises retenues en douane</li><li>Retards coûteux (surestaries)</li><li>Refoulement</li></ul>", 
+            fix: "<ul><li>Veille réglementaire active</li><li>Partenariat avec un transitaire (RDA)</li></ul>" 
+        },
+        "49": { 
+            problem: "Absence de certifications qualité reconnues.",
+            type: "CRITICAL", 
+            why: "Sur certains marchés, c'est une barrière à l'entrée absolue (ex: ISO, CE, Halal...).",
+            impact: "<ul><li>Exclusion des appels d’offres</li><li>Perte de crédibilité face aux partenaires financiers</li></ul>", 
+            fix: "<ul><li>Lancer une démarche de certification (ISO 9001, HACCP...)</li></ul>" 
+        },
+        "2": { 
+            problem: "Produit brut ou à faible niveau de transformation.",
+            type: "STRUCTURAL", 
+            why: "Le niveau de transformation influence directement la valeur ajoutée et la dépendance aux cours mondiaux.",
+            impact: "<ul><li>Marge faible</li><li>Forte concurrence internationale</li><li>Vulnérabilité aux variations de prix</li></ul>", 
+            fix: "<ul><li>Étudier la faisabilité d’une montée en gamme</li><li>Identifier les segments premium</li><li>Investir dans la transformation locale</li></ul>" 
+        },
+        "5": { 
+            problem: "Fréquence de production irrégulière.",
+            type: "STRUCTURAL", 
+            why: "La régularité conditionne la capacité à répondre à une demande stable et répétée.",
+            impact: "<ul><li>Incapacité à honorer des contrats cadres</li><li>Perte de crédibilité auprès d’importateurs</li></ul>", 
+            fix: "<ul><li>Planification annuelle de production</li><li>Sécurisation des approvisionnements</li></ul>" 
+        },
+        "6": { 
+            problem: "Délai de production trop long (> 90 jours).",
+            type: "STRUCTURAL", 
+            why: "Les marchés internationaux valorisent la rapidité et la prévisibilité.",
+            impact: "<ul><li>Désavantage concurrentiel majeur</li><li>Perte de commandes urgentes</li></ul>", 
+            fix: "<ul><li>Optimisation process internes (Lean)</li><li>Constitution de stock tampon produits finis</li></ul>" 
+        },
+        "7": { 
+            problem: "Dépendance excessive à la sous-traitance (> 70%).",
+            type: "STRUCTURAL", 
+            why: "La sous-traitance augmente le risque de perte de contrôle qualité et de dépendance.",
+            impact: "<ul><li>Variabilité de la qualité</li><li>Risque de retards non maîtrisés</li></ul>", 
+            fix: "<ul><li>Contrats qualité stricts</li><li>Diversification des partenaires</li></ul>" 
+        },
+        "14": { 
+            problem: "Absence de tests par laboratoires indépendants.",
+            type: "STRUCTURAL", 
+            why: "Renforce la crédibilité technique et rassure, même si pas toujours obligatoire.",
+            impact: "<ul><li>Difficulté à prouver la conformité</li><li>Blocage sur les marchés exigeants</li></ul>", 
+            fix: "<ul><li>Identification laboratoires accrédités</li><li>Plan de tests périodiques</li></ul>" 
+        },
+        "15": { 
+            problem: "Processus internes non formalisés/documentés.",
+            type: "STRUCTURAL", 
+            why: "La documentation réduit les erreurs humaines et facilite la transmission.",
+            impact: "<ul><li>Dépendance aux individus clés</li><li>Erreurs documentaires récurrentes</li></ul>", 
+            fix: "<ul><li>Rédaction procédures standardisées</li><li>Création d'un manuel export interne</li></ul>" 
+        },
+        "18": { 
+            problem: "Investissement financier dans l'export trop faible (< 10% CA).",
+            type: "STRUCTURAL", 
+            why: "Indique un niveau d’engagement stratégique insuffisant.",
+            impact: "<ul><li>Projet sous-financé</li><li>Prospection irrégulière et sans résultat</li></ul>", 
+            fix: "<ul><li>Budget export dédié annuel</li><li>Plan stratégique export sur 3 ans</li></ul>" 
+        },
+        "20": { 
+            problem: "Coûts d'adaptation et frais administratifs non budgétés.",
+            type: "STRUCTURAL", 
+            why: "Un projet non budgété est rarement maîtrisé et génère des surprises.",
+            impact: "<ul><li>Surcoûts imprévus</li><li>Dégradation forte de la marge</li></ul>", 
+            fix: "<ul><li>Budget export détaillé</li><li>Tableur prévisionnel complet</li></ul>" 
+        },
+        "21": { 
+            problem: "Risques financiers non identifiés.",
+            type: "STRUCTURAL", 
+            why: "La maîtrise des risques sécurise la rentabilité finale.",
+            impact: "<ul><li>Impayés</li><li>Perte sur taux de change</li></ul>", 
+            fix: "<ul><li>Formation moyens de paiement</li><li>Stratégie de couverture de change</li></ul>" 
+        },
+        "22": { 
+            problem: "Absence d'outils de couverture actifs.",
+            type: "STRUCTURAL", 
+            why: "La maîtrise des risques sécurise la rentabilité finale.",
+            impact: "<ul><li>Exposition totale aux défauts de paiement</li></ul>", 
+            fix: "<ul><li>Négociation Crédoc</li><li>Assurance-crédit</li></ul>" 
+        },
+        "24": { 
+            problem: "Non-utilisation des financements publics/privés export.",
+            type: "STRUCTURAL", 
+            why: "Conditionne la capacité d’expansion rapide.",
+            impact: "<ul><li>Croissance plus lente (autofinancement uniquement)</li><li>Manque de compétitivité face aux concurrents soutenus</li></ul>", 
+            fix: "<ul><li>Identification dispositifs publics</li><li>Montage dossier bancaire structuré</li></ul>" 
+        },
+        "29": { 
+            problem: "Absence de participation aux salons internationaux.",
+            type: "STRUCTURAL", 
+            why: "Les salons sont des accélérateurs de visibilité et de prospection.",
+            impact: "<ul><li>Prospection plus lente</li><li>Réseau international limité</li></ul>", 
+            fix: "<ul><li>Sélection salons ciblés</li><li>Visiteur puis Exposant</li></ul>" 
+        },
+        "31": { 
+            problem: "Pas de contacts préalables sur le marché.",
+            type: "STRUCTURAL", 
+            why: "Facilite l’entrée marché mais non indispensable au départ.",
+            impact: "<ul><li>Temps d’entrée marché rallongé</li><li>Coût prospection accru</li></ul>", 
+            fix: "<ul><li>Mapping distributeurs</li><li>Appui agences export</li></ul>" 
+        },
+        "33": { 
+            problem: "Politique de prix unique, non adaptée au marché local.",
+            type: "STRUCTURAL", 
+            why: "Le prix est un outil stratégique, il doit coller au pouvoir d'achat local.",
+            impact: "<ul><li>Mauvais positionnement</li><li>Produit hors marché ou marge sacrifiée</li></ul>", 
+            fix: "<ul><li>Benchmark concurrence locale</li><li>Stratégie prix par segment</li></ul>" 
+        },
+        "34": { 
+            problem: "Fixation des prix incohérente.",
+            type: "STRUCTURAL", 
+            why: "Le prix est un outil stratégique, pas uniquement comptable.",
+            impact: "<ul><li>Erosion marge</li><li>Incohérence selon marché</li></ul>", 
+            fix: "<ul><li>Stratégie prix par segment</li><li>Approche 'Value Pricing'</li></ul>" 
+        },
+        "35": { 
+            problem: "Outils de communication inadaptés ou non traduits.",
+            type: "STRUCTURAL", 
+            why: "L’image influence fortement la décision d’achat internationale.",
+            impact: "<ul><li>Manque de crédibilité</li><li>Difficulté à convaincre les importateurs</li></ul>", 
+            fix: "<ul><li>Catalogue multilingue</li><li>Fiches techniques normalisées</li><li>Site web pro</li></ul>" 
+        },
+        "37": { 
+            problem: "Isolement vis-à-vis des institutions d'appui.",
+            type: "STRUCTURAL", 
+            why: "Permet d’accéder à information, réseaux et accompagnement.",
+            impact: "<ul><li>Isolement stratégique</li><li>Moins d’opportunités détectées</li></ul>", 
+            fix: "<ul><li>Inscription réseaux export</li><li>Participation programmes publics</li></ul>" 
+        },
+        "38": { 
+            problem: "Absence de visibilité digitale (Site Web / Réseaux).",
+            type: "STRUCTURAL", 
+            why: "Le premier réflexe d'un acheteur est de vérifier l'existence en ligne.",
+            impact: "<ul><li>Perte de prospects</li><li>Image d'entreprise 'fantôme'</li></ul>", 
+            fix: "<ul><li>Site vitrine en anglais</li><li>Page LinkedIn entreprise</li></ul>" 
+        },
+        "40": { 
+            problem: "Pas de CRM ou d'outil de suivi commercial.",
+            type: "STRUCTURAL", 
+            why: "Le suivi client export nécessite rigueur et traçabilité sur le long terme.",
+            impact: "<ul><li>Perte d'historique</li><li>Mauvaise gestion des relances</li></ul>", 
+            fix: "<ul><li>Mise en place CRM simple</li><li>Procédure suivi commandes export</li></ul>" 
+        },
+        "41": { 
+            problem: "Sourcing fragile (Fournisseur unique).",
+            type: "STRUCTURAL", 
+            why: "La diversification réduit le risque de rupture de la chaîne.",
+            impact: "<ul><li>Arrêt production si fournisseur unique défaillant</li></ul>", 
+            fix: "<ul><li>Recherche fournisseurs alternatifs (Backup)</li></ul>" 
+        },
+        "42": { 
+            problem: "Gestion de stock non optimisée.",
+            type: "STRUCTURAL", 
+            why: "Optimise les délais et les coûts logistiques.",
+            impact: "<ul><li>Ruptures de stock inopinées</li><li>Surstock coûteux (BFR)</li></ul>", 
+            fix: "<ul><li>Système simple de gestion stock</li><li>Inventaires réguliers</li></ul>" 
+        },
+        "43": { 
+            problem: "Méconnaissance des contraintes logistiques produits.",
+            type: "STRUCTURAL", 
+            why: "Conditionne la conformité et l'intégrité du produit.",
+            impact: "<ul><li>Non-conformité partielle</li><li>Avaries durant le transport</li></ul>", 
+            fix: "<ul><li>Fiches pays réglementaires</li><li>Veille normative</li></ul>" 
+        },
+        "47": { 
+            problem: "Délais de livraison non garantis.",
+            type: "STRUCTURAL", 
+            why: "La fiabilité logistique construit la réputation sur la durée.",
+            impact: "<ul><li>Pénalités contractuelles</li><li>Perte de confiance client</li></ul>", 
+            fix: "<ul><li>Planification logistique précise</li><li>Partenariat transporteur fiable</li></ul>" 
+        },
+        "50": { 
+            problem: "Pas de veille sur les tendances du secteur.",
+            type: "STRUCTURAL", 
+            why: "Maintient la compétitivité à long terme.",
+            impact: "<ul><li>Offre obsolète</li><li>Perte part de marché progressive</li></ul>", 
+            fix: "<ul><li>Veille sectorielle organisée</li><li>Abonnement revues spécialisées</li></ul>" 
+        },
+        "51": { 
+            problem: "Faible investissement en R&D.",
+            type: "STRUCTURAL", 
+            why: "L'innovation soutient la différenciation prix.",
+            impact: "<ul><li>Stagnation produit</li><li>Pression concurrentielle accrue par les prix</li></ul>", 
+            fix: "<ul><li>Budget innovation progressif</li></ul>" 
+        },
+        "52": { 
+            problem: "Aucune protection intellectuelle (Marque, Brevet).",
+            type: "STRUCTURAL", 
+            why: "Protège l'avantage concurrentiel et la valeur de l'entreprise.",
+            impact: "<ul><li>Copie produit impunie</li><li>Perte de valeur de la marque</li></ul>", 
+            fix: "<ul><li>Dépôt marque prioritaire</li><li>Enveloppe Soleau</li></ul>" 
+        },
+        "53": { 
+            problem: "Pas de collaboration avec la recherche.",
+            type: "STRUCTURAL", 
+            why: "Accélère l'innovation.",
+            impact: "<ul><li>Isolement technologique</li></ul>", 
+            fix: "<ul><li>Partenariats académiques ciblés</li></ul>" 
+        },
+        "54": { 
+            problem: "Méconnaissance des goûts locaux.",
+            type: "STRUCTURAL", 
+            why: "Permet l'adaptation marketing fine.",
+            impact: "<ul><li>Mauvais positionnement</li><li>Faible adoption produit</li></ul>", 
+            fix: "<ul><li>Étude qualitative locale</li><li>Focus groups</li></ul>" 
+        },
+        "55": { 
+            problem: "Absence de politique de marque forte.",
+            type: "STRUCTURAL", 
+            why: "La marque renforce la différenciation et la fidélisation.",
+            impact: "<ul><li>Concurrence uniquement sur le prix</li><li>Client volatile</li></ul>", 
+            fix: "<ul><li>Définition identité marque claire</li><li>Cohérence communication</li></ul>" 
+        }
+    };
+
+    // STRUCTURE DES QUESTIONS (Version Complète)
+    const structure = [
+        {
+            id: 'prod', title: 'd) Fonction production', weight: 25,
+            questions: [
+                { type: 'text', q: "1. Principaux produits :" },
+                { type: 'radio', q: "2. Niveau de transformation :", options: [ { t: "Brute", s: 2 }, { t: "Semi-transformé", s: 6 }, { t: "transformé", s: 10 } ]},
+                { type: 'text', q: "3. Volume de production annuel (par produit) :" },
+                { type: 'radio', q: "4. Capacité de production utilisée (%) :", options: [ { t: "<20%", s: 2 }, { t: "20-45%", s: 5 }, { t: "46%-75%", s: 8 }, { t: ">76%", s: 10 } ]},
+                { type: 'radio', q: "5. Quelle est votre fréquence de production :", options: [ { t: "Journalière", s: 10 }, { t: "Hebdomadaire", s: 8 }, { t: "Mensuelle", s: 5 }, { t: "Trimestrielle", s: 2 }, { t: "Semestrielle", s: 2 } ]},
+                { type: 'radio', q: "6. Quel est votre délai moyen de production ?:", options: [ { t: "< 30j", s: 10 }, { t: "30-60j", s: 8 }, { t: "61-90j", s: 5 }, { t: ">90j", s: 2 } ]},
+                { type: 'radio', q: "7. Quelle part de votre production sous-traitez vous ? :", options: [ { t: "0", s: 10 }, { t: "1-30%", s: 8 }, { t: "31-70%", s: 5 }, { t: ">70%", s: 2 } ]},
+                { type: 'radio', q: "8. Disposez-vous d'une capacité de production suffisante pour répondre à une demande supplémentaire de 30 % sans surcoût ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_q: "Si oui, dans quel délai (jours) :", sub_options: [ {t:"< 30j"}, {t:"30-60j"}, {t:"61-90j"}, {t:">90j"} ] },
+                { type: 'radio', q: "9. L’outil de production permet-il une adaptation du produit à coût réduit ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
+                { type: 'text', q: "10. Produits actuellement exportés (le cas échéant) :" },
+                { type: 'radio', q: "11. Disposez-vous d'un système de traçabilité de vos produits ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_type: 'check', sub_q: "Si oui, que couvre t-il ?", sub_options: [{t:"L’origine des matières premières"}, {t:"Le processus de production"}, {t:"Le conditionnement"}, {t:"La distribution"}, {t:"Autre (préciser)"}] },
+                { type: 'radio', q: "12. Avez-vous un système de contrôle qualité rigoureux ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_type: 'check', sub_q: "Si oui, sue quelle(s) partie(s) de votre process ?", sub_options: [{t:"Approvisionnement"}, {t:"Production"}, {t:"conditionnement"}, {t:"stockage"}] },
+                { type: 'radio', q: "13. Avez-vous des équipements et infrastructures de production conformes aux standards internationaux ?", options: [ { t: "Oui", s: 10 }, { t: "non", s: 0 } ]},
+                { type: 'radio', q: "14. Effectuez-vous régulièrement des tests produits par des laboratoires agréés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si, Oui lesquels ?" },
+                { type: 'radio', q: "15. Vos processus internes sont-ils documentés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]}
+            ]
+        },
+        {
+            id: 'fin', title: 'e) Fonction financière', weight: 15,
+            questions: [
+                { type: 'radio', q: "16. Disposez-vous d’un outil ou moyen de calcul de votre coût de revient export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui lequel ?" },
+                { type: 'radio', q: "17. Quel pourcentage de votre projet export peut-être couvert par vos ressources financières actuelles ?", options: [ { t: "< 30%", s: 2 }, { t: "30%", s: 5 }, { t: "31-50%", s: 8 }, { t: ">50%", s: 10 } ]},
+                { type: 'radio', q: "18. Quelle part de votre Chiffres d’Affaires pouvez-vous consacrer au développement export ?", options: [ { t: "< 10%", s: 2 }, { t: "10%", s: 5 }, { t: "11-25%", s: 8 }, { t: ">25%", s: 10 } ]},
+                { type: 'check', q: "19. Votre entreprise a-t-elle la capacité de financer :", options: [ { t: "Un allongement des délais de paiement des clients étrangers", s: 5 }, { t: "Des investissements productifs ou commerciaux", s: 5 } ]},
+                
+                { type: 'check', q: "20. Les coûts suivants sont-ils identifiés, chiffrés et budgétés :<br><br><b>a. Adaptation des produits</b> (normes, packaging, certifications)", options: [ { t: "Identifié", s: 3.3 }, { t: "Chiffré", s: 3.3 }, { t: "Budgété", s: 3.4 } ]},
+                { type: 'check', q: "<b>b. Frais administratifs et douaniers</b>", options: [ { t: "Identifié", s: 3.3 }, { t: "Chiffré", s: 3.3 }, { t: "Budgété", s: 3.4 } ]},
+                
+                { type: 'check', q: "21. A quels risques financiers liés à l’export êtes-vous exposé ?", options: [ { t: "Non-paiement acheteur", s: 2.5 }, { t: "change", s: 2.5 }, { t: "défaillance banque", s: 2.5 } ]},
+                { type: 'check', q: "22. Disposez-vous d'outils de couverture contre les risques financiers export identifiés ?", options: [ { t: "Paiement commande", s: 2.5 }, { t: "Crédit documentaire", s: 2.5 }, { t: "Remise documentaire", s: 2.5 }, { t: "Affacturage export", s: 2.5 }, { t: "Garantie bancaire", s: 2.5 } ]},
+                { type: 'radio', q: "23. Tenez-vous une comptabilité régulièrement mise à jour et validée par un expert-comptable ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
+                { type: 'check', q: "24. Avez-vous accès à des financements dédiés à l'export ?", options: [ { t: "Préfinancement export", s: 3.3 }, { t: "Crédit de prospection", s: 3.3 }, { t: "assurance-crédit", s: 3.4 }, { t: "Autres", s: 0 } ] },
+                { type: 'text', q: "Précision (si Autres) :" },
+                { type: 'check', q: "25. L’entreprise a-t-elle déjà subi des pertes financières liées à l’export ?", options: [ { t: "impayés", s: 0 }, { t: "change", s: 0 }, { t: "surcoûts", s: 0 } ]},
+                { type: 'radio', q: "26. Avez-vous déjà rencontré des difficultés d’accès au financement bancaire ?", options: [ { t: "Oui", s: 0 }, { t: "Non", s: 10 } ], precision: "si Oui précisez" }
+            ]
+        },
+        {
+            id: 'rh', title: 'f) Fonction ressources humaines', weight: 5,
+            questions: [
+                { type: 'radio', q: "27. L’entreprise dispose-t-elle d’un service ou d’une personne en charge des formalités à l'export ?", options: [ { t: "Oui", s: 10 }, { t: "En cours", s: 5 }, { t: "Non", s: 0 } ]},
+                { type: 'radio', q: "28. Votre équipe est-elle formée aux spécificités du commerce international ?", options: [ { t: "Oui", s: 10 }, { t: "En cours", s: 5 }, { t: "Non", s: 0 } ]}
+            ]
+        },
+        {
+            id: 'mkt', title: 'g) Fonction marketing-commercialisation', weight: 20,
+            questions: [
+                { type: 'radio', q: "29. Avez-vous déjà participé à des salons internationaux ou missions commerciales ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui précisez" },
+                { type: 'radio', q: "30. Vos marchés cibles sont-ils clairement identifiés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui précisez" },
+                { type: 'radio', q: "31. Avez-vous des contacts ou partenaires dans vos marchés cibles ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
+                { type: 'radio', q: "32. Votre produit/service répond-il à un besoin spécifique sur les marchés export ?", options: [ { t: "❌ Pas de besoin identifié", s: 0 }, { t: "⚠ Besoin flou/incertain", s: 3 }, { t: "✓ Besoin partiellement identifié", s: 6 }, { t: "✅ Besoin clairement identifié", s: 10 } ]},
+                { type: 'radio', q: "33. Avez-vous une grille de prix adaptée à chaque marché cible ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
+                { type: 'radio', q: "34. Comment fixez-vous ou envisagez-vous fixer vos prix de vente export ?", options: [ { t: "Alignement", s: 5 }, { t: "coût réel+ marge", s: 10 }, { t: "positionnement de la marque", s: 8 } ]},
+                { type: 'check', q: "35. Votre équipe dispose t-elle des outils de communication suivants ?", options: [ { t: "Catalogue", s: 1.5 }, { t: "Site web", s: 1.5 }, { t: "Fiches", s: 1.5 }, { t: "produits", s: 1.5 }, { t: "Documentation en d'autres langues", s: 2 }, { t: "Réseaux sociaux", s: 1 }, { t: "Autres", s: 1 } ]},
+                { type: 'radio', q: "36. Avec combien de distributeurs ou agents commerciaux fiables travaillez-vous?", options: [ { t: "❌ Aucun distributeur", s: 0 }, { t: "⚠ 1-2 distributeurs", s: 4 }, { t: "✓ Quelques distributeurs", s: 7 }, { t: "✅ Réseau distributeurs fiables", s: 10 } ]},
+                { type: 'radio', q: "37. Entretenez-vous des relations avec les institutions d'appui à l'export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui lesquelles" }
+            ]
+        },
+        {
+            id: 'si', title: 'h) Fonction système d’information', weight: 10,
+            questions: [
+                { type: 'radio', q: "38. L’entreprise dispose-t-elle d’un site internet et/ou de réseaux sociaux ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
+                { type: 'radio', q: "39. Votre entreprise utilise-t-elle des outils digitaux pour la gestion des clients et prospects ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui précisez ?" },
+                { type: 'radio', q: "40. Existe-t-il des outils ou procédures internes de suivi des opérations export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui lesquelles" }
+            ]
+        },
+        {
+            id: 'log', title: 'i) Fonction logistique transport', weight: 10,
+            questions: [
+                { type: 'radio', q: "41. Combien de fournisseurs avez-vous ?", options: [ { t: "Auto-fournisseur", s: 8 }, { t: "1", s: 2 }, { t: "2", s: 5 }, { t: "3", s: 8 }, { t: ">3", s: 10 } ]},
+                { type: 'radio', q: "42. Utilisez-vous un système automatisé de gestion de stock ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui précisez ?" },
+                { type: 'radio', q: "43. L’entreprise maîtrise-t-elle les contraintes spécifiques liées à ses produits à l’export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui précisez ?" },
+                { type: 'check', q: "44. L'emballage respecte-t-il les exigences des marchés ciblés ?", options: [ { t: "étiquetage", s: 3.3 }, { t: "langues", s: 3.3 }, { t: "normes sanitaires ou techniques", s: 3.4 } ]},
+                { type: 'radio', q: "45. Le conditionnement de vos produits est-il adapté au transport international ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
+                { type: 'radio', q: "46. Connaissez-vous ces Incoterms et leur impact sur vos prix ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_type: 'check', sub_q: "Si Oui, à quels incoterms êtes-vous familiers ?", sub_options: [ { t: "FAS" }, { t: "FOB" }, { t: "CFR" }, { t: "CIF" }, { t: "EXW" }, { t: "FCA" }, { t: "CPT" }, { t: "CIP" }, { t: "DAP" }, { t: "DPU" }, { t: "DDP" } ] },
+                { type: 'radio', q: "47. Pouvez-vous garantir les délais de livraison annoncés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
+                { type: 'radio', q: "48. Disposez-vous d'un moyen de connaitre les réglementations douanières de vos marchés cibles ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Oui Non ; si oui lequel" }
+            ]
+        },
+        {
+            id: 'tech', title: 'j) Compétitivité technologique', weight: 10,
+            questions: [
+                { type: 'radio', q: "49. Disposez-vous de certifications qualité reconnues ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui lesquels" },
+                { type: 'radio', q: "50. Suivez-vous les tendances et innovations de votre secteur ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui, par quel(s) moyen(s)" },
+                { type: 'radio', q: "51. Quel pourcentage de votre CA consacrez-vous à la R&D ?", options: [ { t: "< 10%", s: 2 }, { t: "10%", s: 5 }, { t: "11-25%", s: 8 }, { t: ">25", s: 10 } ]},
+                { type: 'check', q: "52. De quelle protection intellectuelle disposez-vous pour vos produits ?", options: [ { t: "Brevet", s: 2.5 }, { t: "Marque", s: 2.5 }, { t: "Droit d'auteur", s: 2.5 }, { t: "Dessins et modèles", s: 2.5 }, { t: "Secrets industriels", s: 2.5 }, { t: "Autres (à préciser)", s: 0 } ]},
+                { type: 'text', q: "Précision (si Autres) :" },
+                { type: 'radio', q: "53. Collaborez-vous avec des centres de recherche ou universités ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui lesquels" }
+            ]
+        },
+        {
+            id: 'comm', title: 'k) compétitivité commerciale', weight: 5,
+            questions: [
+                { type: 'radio', q: "54. Les goûts et habitudes de consommation sont-ils connus ?", options: [ { t: "Oui", s: 10 }, { t: "Partiellement", s: 5 }, { t: "Non", s: 0 } ]},
+                { type: 'radio', q: "55. Existe-t-il une politique de marque dans l’entreprise ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]}
+            ]
+        }
+    ];
+
+    // =========================================================================
+    // INITIALISATION & UI
+    // =========================================================================
+    function init() {
+        const sectSel = document.getElementById('secteur');
+        SECTORS.forEach(s => { const opt = document.createElement('option'); opt.value = opt.text = s; sectSel.add(opt); });
+        const countrySel = document.getElementById('marches');
+        COUNTRIES.forEach(c => { const opt = document.createElement('option'); opt.value = opt.text = c; countrySel.add(opt); });
+
+        const container = document.getElementById('quiz-content');
+        let html = '';
+        structure.forEach((section, sIdx) => {
+            if(section.id === 'tech') html += `<div class="part-header">III. ANALYSE DE LA COMPETITIVITE DE L'ENTREPRISE (15%)</div>`;
+            html += `<div class="section-header"><span>${section.title}</span><span style="font-size:0.8em; opacity:0.8">Poids: ${section.weight}%</span></div>`;
+            section.questions.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                // Ici on utilise q.q qui contient MAINTENANT la question complète
+                html += `<div class="q-card"><span class="q-text">${q.q}</span>`;
+                
+                if(q.type === 'text') {
+                    html += `<input type="text" class="form-control" id="${qId}" placeholder="...">`;
+                }
+                else if(q.type === 'radio') {
+                    html += `<div class="opt-group">`;
+                    q.options.forEach(opt => html += `<label class="opt-btn" onclick="handleRadio(this, '${qId}', '${opt.t}')"><input type="radio" name="${qId}" value="${opt.s}">${opt.t}</label>`);
+                    html += `</div>`;
+                    if(q.precision) html += `<div id="prec_${qId}" class="sub-options"><label>${q.precision}</label><input type="text" class="form-control"></div>`;
+                    if(q.sub_q) {
+                        html += `<div id="sub_${qId}" class="sub-options"><label><b>${q.sub_q}</b></label><div class="opt-group">`;
+                        q.sub_options.forEach(so => {
+                            if(q.sub_type === 'check') html += `<label class="opt-btn" onclick="toggleCheck(this)"><input type="checkbox" name="${qId}_sub">${so.t}</label>`;
+                            else html += `<label class="opt-btn" onclick="handleSubRadio(this)"><input type="radio" name="${qId}_sub">${so.t}</label>`;
+                        });
+                        html += `</div></div>`;
+                    }
+                } 
+                else if(q.type === 'check') {
+                    html += `<div class="opt-group">`;
+                    q.options.forEach(opt => html += `<label class="opt-btn" onclick="toggleCheck(this)"><input type="checkbox" name="${qId}" value="${opt.s}">${opt.t}</label>`);
+                    html += `</div>`;
+                }
+                html += `</div>`;
+            });
+        });
+        container.innerHTML = html;
+    }
+
+    // Gestion UI Events
+    window.toggleAutreJuridique = function() {
+        const isAutre = document.querySelector('input[name="juridique"][value="Autre"]').checked;
+        document.getElementById('juridique-autre-container').style.display = isAutre ? 'block' : 'none';
+    }
+    window.handleRadio = function(el, qId, labelText) {
+        const group = el.parentElement;
+        Array.from(group.children).forEach(c => { c.classList.remove('selected'); c.querySelector('input').checked = false; });
+        el.classList.add('selected'); el.querySelector('input').checked = true;
+        
+        const isYes = labelText.toLowerCase().includes('oui') || labelText.includes('✅') || labelText.includes('dentifié');
+        if(document.getElementById('prec_'+qId)) document.getElementById('prec_'+qId).style.display = isYes ? 'block' : 'none';
+        if(document.getElementById('sub_'+qId)) document.getElementById('sub_'+qId).style.display = isYes ? 'block' : 'none';
+    }
+    window.toggleCheck = function(el) {
+        el.classList.toggle('selected');
+        const chk = el.querySelector('input');
+        chk.checked = !chk.checked;
+    }
+    window.handleSubRadio = function(el) {
+        const group = el.parentElement;
+        Array.from(group.children).forEach(c => { c.classList.remove('selected'); c.querySelector('input').checked = false; });
+        el.classList.add('selected'); el.querySelector('input').checked = true;
+    }
+    window.resetDiagnostic = function() {
+        if(confirm("Attention : toutes les données seront perdues. Voulez-vous recommencer ?")) window.location.reload(); 
+    }
+
+    // =========================================================================
+    // CALCUL ET AFFICHAGE
+    // =========================================================================
+    window.calculateResults = function() {
+        let globalScore = 0;
+        savedDiagnosis = []; 
+        let labels = [];
+        let radarData = [];
+        let barsHtml = '';
+        savedScores = { global: 0, verdict: "", details: {} };
+
+        structure.forEach((section, sIdx) => {
+            let sScore = 0; let sMax = 0;
+            section.questions.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                let qVal = 0;
+                let maxQ = 10;
+                
+                if(q.type === 'radio') {
+                    const sel = document.querySelector(`input[name="${qId}"]:checked`);
+                    if(sel) qVal = parseFloat(sel.value);
+                } else if(q.type === 'check') {
+                    const chks = document.querySelectorAll(`input[name="${qId}"]:checked`);
+                    chks.forEach(c => qVal += parseFloat(c.value));
+                    if(qVal > 10) qVal = 10;
+                }
+                sScore += qVal; sMax += maxQ;
+
+                // Nettoyage pour la DB (enlève les balises HTML si présentes dans DB keys)
+                let qNum = q.q.replace(/<[^>]*>?/gm, '').split('.')[0].trim();
+                
+                // Si la note est faible ET que le numéro existe dans la DB
+                if(qVal <= 5 && DIAGNOSTIC_DB[qNum]) {
+                    if(!savedDiagnosis.some(d => d.qNum === qNum)) {
+                        savedDiagnosis.push({ ...DIAGNOSTIC_DB[qNum], qNum: qNum });
+                    }
+                }
+            });
+
+            const ratio = sMax > 0 ? (sScore / sMax) : 0;
+            globalScore += ratio * section.weight;
+            
+            savedScores.details[section.id] = (ratio*100).toFixed(0);
+
+            labels.push(section.id.toUpperCase());
+            radarData.push((ratio*100).toFixed(0));
+            // Couleurs basées sur la charte
+            let color = ratio < 0.5 ? '#c0392b' : (ratio < 0.75 ? '#F77F00' : '#009E60');
+            barsHtml += `<div class="bar-wrapper"><div class="bar-labels"><span>${section.title}</span><span>${(ratio*100).toFixed(0)}%</span></div><div class="bar-bg"><div class="bar-fill" style="width:${ratio*100}%; background:${color}"></div></div></div>`;
+        });
+
+        // Affichage Global
+        const fScoreVal = globalScore.toFixed(0);
+        savedScores.global = fScoreVal;
+        document.getElementById('final-score').innerText = fScoreVal + "%";
+        document.getElementById('bars-container').innerHTML = barsHtml;
+
+        const v = document.getElementById('verdict');
+        let vColor = "";
+        if(fScoreVal < 50) { v.innerText = "NON VIABLE"; vColor = "#c0392b"; }
+        else if(fScoreVal < 75) { v.innerText = "À STRUCTURER"; vColor = "#F77F00"; }
+        else { v.innerText = "EXPORT READY"; vColor = "#009E60"; }
+        v.style.color = vColor;
+        document.getElementById('final-score').style.borderColor = vColor;
+        savedScores.verdict = v.innerText;
+
+        // Affichage Diagnostic (Avec RESTAURATION DU BLOC IMPACT)
+        const container = document.getElementById('diagnostic-container');
+        if(savedDiagnosis.length === 0) {
+            container.innerHTML = `<div style="background:#e8f5e9; color:#009E60; padding:20px; border-radius:8px; text-align:center;"><strong>✅ Excellente performance !</strong></div>`;
+        } else {
+            savedDiagnosis.sort((a,b) => (a.type==='CRITICAL'?-1:1));
+            let html = "";
+            savedDiagnosis.forEach(issue => {
+                const tagClass = issue.type === 'CRITICAL' ? 'tag-crit' : 'tag-struct';
+                const cardClass = issue.type === 'CRITICAL' ? 'critical' : 'structural';
+                const typeLabel = issue.type === 'CRITICAL' ? 'CRITIQUE' : 'STRUCTURANT';
+                
+                // Rétablissement de l'affichage complet (Cause, Impact, Action)
+                html += `
+                <div class="diag-card ${cardClass}">
+                    <div class="diag-tag ${tagClass}">${typeLabel}</div>
+                    <h4>${issue.qNum}. ${issue.problem}</h4>
+                    <div class="diag-detail">
+                        <div class="diag-block"><strong>🎯 Cause / Risque</strong><div class="diag-text">${issue.why}</div></div>
+                        <div class="diag-block"><strong>⚠️ Impact du risque</strong>${issue.impact}</div>
+                        <div class="diag-block"><strong>🔧 Mesures correctives</strong>${issue.fix}</div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // MISE À JOUR HEADER RAPPORT (IMPORTANT POUR PDF)
+        const dateJour = new Date().toLocaleDateString();
+        const nomEntreprise = document.getElementById('denomination').value || 'Entreprise Inconnue';
+        const secteur = document.getElementById('secteur').value || '-';
+        
+        document.getElementById('report-header').innerHTML = `
+            <h2>DIAGNOSTIC EXPORT : ${nomEntreprise}</h2>
+            <div style="font-size:0.9rem; margin-top:5px; color:#555;">
+                Date: ${dateJour} | Secteur: ${secteur}
+            </div>
+        `;
+
+        // Chart
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        if(window.myChart) window.myChart.destroy();
+        window.myChart = new Chart(ctx, {
+            type: 'radar',
+            data: { labels: labels, datasets: [{ label: 'Maturité', data: radarData, backgroundColor: 'rgba(247, 127, 0, 0.2)', borderColor: '#F77F00', borderWidth: 2 }] },
+            options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } }
+        });
+    }
+
+    // =========================================================================
+    // FONCTION SAUVEGARDE GOOGLE SHEETS
+    // =========================================================================
+    function collectFullData() {
+        const info = {
+            denomination: document.getElementById('denomination').value || "",
+            annee: document.getElementById('annee_creation').value || "",
+            juridique: document.querySelector('input[name="juridique"]:checked')?.value || "",
+            siege: document.getElementById('siege').value || "",
+            rccm: document.getElementById('rccm').value || "",
+            cc: document.getElementById('cc').value || "",
+            secteur: document.getElementById('secteur').value || "",
+            dirigeant: document.getElementById('dirigeant').value || "",
+            fonction: document.getElementById('fonction').value || "",
+            ca: document.getElementById('ca').value || "",
+            part_export: document.getElementById('part_export').value || "",
+            marches: Array.from(document.getElementById('marches').selectedOptions).map(opt => opt.value)
+        };
+
+        let allAnswers = [];
+        structure.forEach((section, sIdx) => {
+            // Ajouter un marqueur de section pour la lisibilité
+            allAnswers.push({q: "SECTION_TITLE", a: section.title});
+            
+            section.questions.forEach((q, qIdx) => {
+                const qId = `q_${sIdx}_${qIdx}`;
+                let ans = "Non répondu";
+                if(q.type === 'text') ans = document.getElementById(qId)?.value || "";
+                else if(q.type === 'radio') {
+                    const sel = document.querySelector(`input[name="${qId}"]:checked`);
+                    if(sel) {
+                        const lbl = sel.parentElement.innerText;
+                        ans = lbl + " (" + sel.value + "/10)";
+                    }
+                } else if(q.type === 'check') {
+                    const chks = document.querySelectorAll(`input[name="${qId}"]:checked`);
+                    if(chks.length > 0) ans = Array.from(chks).map(c => c.parentElement.innerText).join(", ");
+                }
+                
+                // Récupération des sous-questions/précisions
+                if(document.getElementById('prec_'+qId) && document.getElementById('prec_'+qId).style.display === 'block') {
+                    let precVal = document.getElementById('prec_'+qId).querySelector('input').value;
+                    if(precVal) ans += " [Précision: " + precVal + "]";
+                }
+                
+                // Envoyer la question complète (q.q)
+                allAnswers.push({ q: q.q, a: ans });
+            });
+        });
+
+        return {
+            info: info,
+            scores: savedScores, 
+            diagnostic: savedDiagnosis, 
+            answers: allAnswers 
+        };
+    }
+
+    function saveToGoogleSheets() {
+        const btn = document.getElementById('btn-save');
+        btn.innerHTML = "⏳ Création onglet...";
+        btn.disabled = true;
+
+        const dataPayload = collectFullData();
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors", 
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dataPayload)
+        })
+        .then(() => {
+            alert("✅ Onglet créé avec succès sur Google Sheets !");
+            btn.innerHTML = "☁️ Sauvegarder";
+            btn.disabled = false;
+        })
+        .catch(err => {
+            console.error(err);
+            alert("⚠️ Commande envoyée (vérifiez le Sheet)."); 
+            btn.innerHTML = "☁️ Sauvegarder";
+            btn.disabled = false;
+        });
+    }
+
+    // Navigation
+    let currentStep = 1;
+    function changeStep(n) {
+        document.getElementById(`view-${currentStep}`).classList.remove('active');
+        document.getElementById(`step-ind-${currentStep}`).classList.remove('active');
+        currentStep += n;
+        if(currentStep > 3) currentStep = 3; if(currentStep < 1) currentStep = 1;
+        document.getElementById(`view-${currentStep}`).classList.add('active');
+        document.getElementById(`step-ind-${currentStep}`).classList.add('active');
+        document.getElementById('btn-prev').style.display = (currentStep===1)?'none':'block';
+        if(currentStep===3) { document.getElementById('btn-next').style.display = 'none'; calculateResults(); } 
+        else { document.getElementById('btn-next').style.display = 'block'; document.getElementById('btn-next').innerText = "Suivant >>"; }
+        window.scrollTo(0,0);
+    }
+    init();
+</script>
+</body>
+</html>
