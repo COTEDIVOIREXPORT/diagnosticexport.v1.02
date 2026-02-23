@@ -756,7 +756,7 @@
 
         const v = document.getElementById('verdict');
         let vColor = "";
-        if(fScoreVal < 50) { v.innerText = "NON VIABLE"; vColor = "#c0392b"; }
+        if(fScoreVal < 50) { v.innerText = "FAIBLE VIABILITE"; vColor = "#c0392b"; }
         else if(fScoreVal < 75) { v.innerText = "À STRUCTURER"; vColor = "#F77F00"; }
         else { v.innerText = "EXPORT READY"; vColor = "#009E60"; }
         v.style.color = vColor;
@@ -922,3 +922,4 @@
 </script>
 </body>
 </html>
+
