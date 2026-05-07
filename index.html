@@ -4,52 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OUTIL DE DIAGNOSTIC EXPORT - AGENCE CÔTE D'IVOIRE EXPORT</title>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* =========================================
-           CHARTE GRAPHIQUE CÔTE D'IVOIRE EXPORT
-           ========================================= */
-        :root { 
-            --ci-green: #009E60;   
-            --ci-orange: #F77F00;  
-            --ci-white: #FFFFFF;   
-            
-            --primary: #007A4D;    
-            --accent: #F77F00;     
-            --bg: #F4F7F6;         
+        :root {
+            --ci-green: #009E60;
+            --ci-orange: #F77F00;
+            --ci-white: #FFFFFF;
+
+            --primary: #007A4D;
+            --accent: #F77F00;
+            --bg: #F4F7F6;
             --text: #333333;
             --danger: #c0392b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); min-height: 100vh; padding: 20px; color: var(--text); }
-        
-        .main-container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            background: var(--ci-white); 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 800px; 
-            border-top: 5px solid var(--ci-orange); 
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--ci-white);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 800px;
+            border-top: 5px solid var(--ci-orange);
         }
-        
-        header { 
-            background: var(--ci-white); 
-            padding: 15px 40px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
+
+        header {
+            background: var(--ci-white);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 2px solid #eee;
         }
-        
+
         .brand-area { display: flex; align-items: center; gap: 20px; }
         .brand-area img { height: 60px; width: auto; }
         .brand-text h1 { font-size: 1.1rem; font-weight: 800; color: var(--primary); text-transform: uppercase; line-height: 1.2; }
@@ -58,7 +55,7 @@
         .header-controls { display: flex; gap: 20px; align-items: center; }
         .btn-reset { background: white; border: 1px solid #ddd; color: #666; padding: 6px 15px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
         .btn-reset:hover { background: var(--danger); color: white; border-color: var(--danger); }
-        
+
         .progress-container { background: white; padding: 15px 40px; display: flex; justify-content: center; gap: 20px; border-bottom: 1px solid #f0f0f0; }
         .step { display: flex; align-items: center; opacity: 0.6; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
         .step.active { opacity: 1; color: var(--ci-orange); border-bottom: 3px solid var(--ci-orange); }
@@ -73,15 +70,14 @@
         .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; color: #555; }
         .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; transition: 0.3s; }
         .form-control:focus { border-color: var(--ci-orange); outline: none; }
-        
-        /* Styles Multi-Input (Q1, Q3 et Marchés) */
+
         .multi-input-wrapper { display: flex; gap: 10px; margin-bottom: 10px; }
         .btn-add-item { background: var(--ci-orange); color: white; border: none; width: 45px; font-size: 1.5rem; font-weight:bold; cursor: pointer; border-radius: 6px; display:flex; align-items:center; justify-content:center; padding-bottom:4px; }
         .btn-add-item:hover { background: #e67e22; }
         .multi-list { display: flex; flex-wrap: wrap; gap: 8px; min-height: 30px; }
         .multi-item { background: #f0f0f0; border: 1px solid #ddd; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; animation: fadeIn 0.3s; }
         .multi-item .remove { color: var(--danger); font-weight: bold; cursor: pointer; font-size: 1.1rem; line-height: 1; }
-        
+
         .radio-container { display: flex; flex-wrap: wrap; gap: 10px; }
         .radio-label { display: flex; align-items: center; cursor: pointer; font-size: 0.9rem; background: #f9f9f9; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; transition:0.2s; }
         .radio-label:hover { background: #fff8e1; border-color: var(--ci-orange); }
@@ -89,12 +85,12 @@
 
         .part-header { background: var(--primary); color: white; padding: 12px; text-align: center; font-weight: bold; margin-top: 40px; margin-bottom: 20px; border-radius: 6px; }
         .section-header { color: var(--primary); padding: 10px 0; margin: 20px 0 15px 0; border-bottom: 2px solid var(--ci-orange); display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1.1rem; }
-        
+
         .q-card { border-left: 4px solid #ddd; padding: 15px 20px; margin-bottom: 20px; background: #fcfcfc; transition: 0.2s; }
         .q-card:hover { border-left-color: var(--ci-orange); background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .q-card.error-highlight { border-left-color: var(--danger); background: #fff5f5; border: 1px solid var(--danger); }
         .q-text { font-weight: 600; margin-bottom: 10px; display: block; color: #333; line-height: 1.4; }
-        
+
         .opt-group { display: flex; flex-wrap: wrap; gap: 8px; }
         .opt-btn { padding: 6px 14px; background: #fff; border: 1px solid #ccc; border-radius: 20px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; display: flex; align-items: center; }
         .opt-btn:hover { border-color: var(--ci-orange); color: var(--ci-orange); }
@@ -106,7 +102,7 @@
         .score-card { background: var(--primary); color: white; padding: 30px; border-radius: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .score-circle { width: 120px; height: 120px; border-radius: 50%; border: 8px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; margin: 15px 0; }
         .score-verdict { background: white; color: var(--primary); padding: 5px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
-        
+
         .diag-section-header { background: #f0fdf4; color: var(--primary); padding: 12px 20px; font-weight: 800; border-left: 5px solid var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-radius: 0 6px 6px 0; font-size: 1.1rem; }
         .diag-card { background: white; border-radius: 8px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); border-left: 6px solid #ccc; position: relative; }
         .diag-card.critical { border-left-color: var(--danger); background: #fffbfb; }
@@ -137,10 +133,10 @@
         .btn-save { background: var(--ci-green); margin-right: 10px; }
         .btn-save:hover { background: #008f55; }
 
-        @media print { 
+        @media print {
             body, html { background: white !important; margin: 0 !important; padding: 0 !important; width: 100% !important; height: auto !important; overflow: visible !important; }
             .main-container { box-shadow: none !important; max-width: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; border-radius: 0 !important; display: block !important; border: none !important; }
-            .actions, .progress-container, .header-controls, .btn, #view-1, #view-2 { display: none !important; } 
+            .actions, .progress-container, .header-controls, .btn, #view-1, #view-2 { display: none !important; }
             .content { padding: 0 !important; overflow: visible !important; display: block !important; }
             #view-3 { display: block !important; animation: none !important; }
             .dashboard-layout { display: block !important; }
@@ -153,6 +149,18 @@
             .brand-area img { height: 80px; margin-bottom: 10px; }
             canvas { max-height: 400px !important; margin: 0 auto !important; display: block !important; }
         }
+.help-icon { display: inline-flex; justify-content: center; align-items: center; width: 22px; height: 22px; border-radius: 50%; background-color: var(--ci-orange); color: white; font-size: 14px; font-weight: bold; cursor: pointer; margin-left: 10px; vertical-align: middle; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .help-icon:hover { background-color: #e67e22; transform: scale(1.1); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 30px; border-radius: 12px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; border-top: 6px solid var(--ci-orange); }
+        .modal-box h3 { color: var(--primary); margin-bottom: 15px; font-size: 1.2rem; }
+        .modal-box p { color: #444; font-size: 1rem; line-height: 1.6; margin-bottom: 25px; }
+        .modal-btn { background: var(--ci-orange); color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; }
+        .modal-btn:hover { background: #e67e22; }
+.result-tabs { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; justify-content: center; }
+        .result-tab { padding: 10px 25px; cursor: pointer; font-weight: bold; color: #777; border-radius: 30px; transition: 0.3s; background: #f0f0f0; font-size: 0.95rem; }
+        .result-tab.active { background: var(--ci-orange); color: white; box-shadow: 0 4px 10px rgba(247, 127, 0, 0.3); }
+        .result-tab:hover:not(.active) { background: #e0e0e0; }
     </style>
 </head>
 <body>
@@ -167,20 +175,20 @@
             </div>
         </div>
         <div class="header-controls">
-            <button class="btn-reset" onclick="resetDiagnostic()">🔄 Réinitialiser</button>
+            <button class="btn-reset" onclick="resetDiagnostic()">🔄 Nouveau diagnostic</button>
         </div>
     </header>
 
     <div class="progress-container">
-        <div class="step active" id="step-ind-1">1. Profil</div>
-        <div class="step" id="step-ind-2">2. Questionnaire</div>
+        <div class="step active" id="step-ind-1" onclick="naviguerOnglet(1)">1. Profil</div>
+        <div class="step" id="step-ind-2" onclick="naviguerOnglet(2)">2. Questionnaire</div>
         <div class="step" id="step-ind-3">3. Résultats</div>
     </div>
 
     <div class="content">
         <div id="view-1" class="view-section active">
             <h2 style="color:var(--primary); margin-bottom:20px;">I. IDENTIFICATION DE L'ENTREPRISE</h2>
-            
+
             <div class="form-section-title">a) Information générale</div>
             <div class="form-grid">
                 <div class="form-group"><label>Dénomination sociale :</label><input type="text" class="form-control" id="denomination"></div>
@@ -189,7 +197,7 @@
                         </select>
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <label>Forme juridique :</label>
                 <div class="radio-container">
@@ -210,24 +218,45 @@
                 <div class="form-group"><label>N° RCCM :</label><input type="text" class="form-control" id="rccm"></div>
                 <div class="form-group"><label>N° Compte Contribuable :</label><input type="text" class="form-control" id="cc"></div>
             </div>
-            
+
             <div class="form-group">
                 <label>Secteur d’activité :</label>
                 <select class="form-control" id="secteur"></select>
             </div>
 
-            <div class="form-section-title">b) Dirigeant</div>
+            <div class="form-section-title">b) Dirigeant et Contact</div>
             <div class="form-grid">
                 <div class="form-group"><label>Nom et prénoms :</label><input type="text" class="form-control" id="dirigeant"></div>
                 <div class="form-group"><label>Fonction :</label><input type="text" class="form-control" id="fonction"></div>
+                <div class="form-group"><label>Genre :</label>
+                    <select class="form-control" id="genre">
+                        <option value="">-- Sélectionner --</option>
+                        <option value="Homme">Homme</option>
+                        <option value="Femme">Femme</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Tranche d'âge :</label>
+                    <select class="form-control" id="age">
+                        <option value="">-- Sélectionner --</option>
+                        <option value="18-25 ans">18-25 ans</option>
+                        <option value="26-30 ans">26-30 ans</option>
+                        <option value="31-35 ans">31-35 ans</option>
+                        <option value="36-45 ans">36-45 ans</option>
+                        <option value="Plus de 45 ans">Plus de 45 ans</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Email :</label><input type="email" class="form-control" id="email" placeholder="exemple@domaine.com"></div>
+                <div class="form-group"><label>Téléphone :</label><input type="tel" class="form-control" id="telephone" placeholder="Chiffres uniquement" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
             </div>
-            
+
             <div class="form-section-title">c) Taille et activité</div>
             <div class="form-grid">
-                <div class="form-group"><label>Chiffre d’affaires Année N-1 :</label><input type="number" min="0" step="any" class="form-control" id="ca" placeholder="0"></div>
-                <div class="form-group"><label>Part du CA export (%) :</label><input type="number" min="0" max="100" step="any" class="form-control" id="part_export" placeholder="0"></div>
+                <div class="form-group"><label>Employés déclarés :</label><input type="text" class="form-control" id="emp_declares" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
+                <div class="form-group"><label>Employés non déclarés :</label><input type="number" min="0" class="form-control" id="emp_non_declares" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
+                <div class="form-group"><label>Chiffre d’affaires Année N-1 :</label><input type="text" class="form-control" id="ca" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
+                <div class="form-group"><label>Part du CA export (%) :</label><input type="text" class="form-control" id="part_export" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(Number(this.value) > 100) this.value = '100';"></div>
             </div>
-            
+
             <div class="form-group">
                 <label>Marchés actuels :</label>
                 <div class="multi-input-wrapper">
@@ -248,12 +277,20 @@
         <div id="view-3" class="view-section">
             <div style="text-align:right; margin-bottom:10px;">
                 <button id="btn-save" class="btn btn-save" onclick="saveToGoogleSheets()">☁️ Sauvegarder</button>
-                <button class="btn btn-print" onclick="window.print()">🖨️ Exporter PDF</button>
+		<button id="btn-ia" class="btn" style="background:#4285f4;" onclick="analyseIA()">🤖 Analyse IA</button>
+		<button class="btn" style="background:#8e44ad;" onclick="retourTest()">🔧 Modifier & Retester</button>
+                <button class="btn btn-print" onclick="generatePDF()">📄 Exporter PDF</button>
             </div>
-            
-            <div id="report-header" style="text-align:center; margin-bottom:30px; border-bottom:1px solid #eee; padding-bottom:20px;"></div>
 
-            <div class="dashboard-layout">
+            <div id="report-header" style="text-align:center; margin-bottom:20px;"></div>
+
+            <div class="result-tabs" id="onglets-resultats" style="display:none;">
+                <div class="result-tab active" id="btn-tab-synthese" onclick="switchResultTab('synthese')"> Résultat Global</div>
+                <div class="result-tab" id="btn-tab-analyse" onclick="switchResultTab('analyse')"> Analyse par Fonction</div>
+		<div class="result-tab" id="btn-tab-ia" onclick="switchResultTab('ia')">🤖 Analyse IA</div>
+            </div>
+
+            <div class="dashboard-layout" id="tab-synthese">
                 <div>
                     <div class="score-card">
                         <div style="text-transform:uppercase; letter-spacing:1px; font-size:0.8rem; opacity:0.8;">Score Global</div>
@@ -264,18 +301,39 @@
                         <h4 style="margin-bottom:15px; color:#555;">PERFORMANCE PAR AXE</h4>
                         <div id="bars-container"></div>
                     </div>
+		<div id="market-compat" style="background:white; border:1px solid #eee; border-radius:8px; padding:20px; margin-top:20px;">
+                        <h4 style="margin-bottom:15px; color:#555;"> SCORE PAR MARCHÉ</h4>
+                        <div id="market-compat-content"></div>
+                    </div>
                     <div style="background:white; border:1px solid #eee; border-radius:8px; padding:20px; margin-top:20px; display:flex; justify-content:center;">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
 
                 <div>
+                    <div id="incoherences-container" style="margin-bottom:20px;"></div>
+                    <div id="croisements-container" style="margin-bottom:20px;"></div>
                     <h3 style="color:var(--primary); margin-bottom:10px; border-bottom:3px solid var(--ci-orange); padding-bottom:5px; display:inline-block;">
                         📋 DIAGNOSTIC DÉTAILLÉ
                     </h3>
                     <div id="diagnostic-container"></div>
                 </div>
             </div>
+
+            <div id="tab-analyse" style="display:none; padding: 20px; background: white; border-radius: 8px; border: 1px solid #eee;">
+                <div id="analyse-fonctions-container"></div>
+            </div>
+
+<div id="tab-ia" style="display:none; padding: 25px; background: white; border-radius: 8px; border: 1px solid #eee; margin-top: 20px;">
+    <h3 style="color:#4285f4; margin-bottom:15px; border-bottom:3px solid #4285f4; padding-bottom:8px; display:inline-block;">🤖 ANALYSE IA — RECOMMANDATIONS PERSONNALISÉES</h3>
+    <div id="ia-loading" style="display:none; text-align:center; padding:40px;">
+        <div style="font-size:2rem; margin-bottom:10px;">⏳</div>
+        <p style="color:#666;">Veuillez patienter, notre IA analyse votre diagnostic...</p>
+    </div>
+    <div id="ia-content"></div>
+</div>
+
+        </div>
         </div>
     </div>
 
@@ -287,23 +345,429 @@
 </div>
 
 <script>
-    // =========================================================================
-    // CONFIGURATION & DB
-    // =========================================================================
-    
-    // ⚠️ REMPLACEZ CETTE URL PAR LA VOTRE
+
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz84ob6_tZyALsoMNC01d5NQzRgk7ZJKCMTSDJ9428_G_MnwNYcyFOgxhfmONr_E67A/exec";
 
-    let savedScores = {}; 
+    let savedScores = {};
     let savedDiagnosis = [];
-    
-    const COUNTRIES = ["Afrique du Sud", "Algérie", "Allemagne", "Angola", "Arabie saoudite", "Argentine", "Australie", "Belgique", "Bénin", "Brésil", "Burkina Faso", "Cameroun", "Canada", "Chine", "Congo", "Corée du Sud", "Côte d'Ivoire", "Égypte", "Émirats arabes unis", "Espagne", "États-Unis", "France", "Gabon", "Ghana", "Guinée", "Inde", "Indonésie", "Italie", "Japon", "Kenya", "Mali", "Maroc", "Mexique", "Nigeria", "Pays-Bas", "Pologne", "Portugal", "Royaume-Uni", "Russie", "Sénégal", "Singapour", "Suisse", "Togo", "Tunisie", "Turquie", "Vietnam", "Autre"];
-    const SECTORS = ["Agriculture", "Agroalimentaire", "Artisanat", "Automobile", "BTP / Construction", "Chimie / Parachimie", "Commerce / Distribution", "Cosmétique", "Énergie / Mines", "Finance / Assurance", "Industrie manufacturière", "Informatique / Télécoms", "Santé / Pharma", "Services aux entreprises", "Textile / Habillement", "Tourisme / Hôtellerie", "Transport / Logistique", "Autre"];
 
-    // DB Diagnostics (IDENTIQUE V7.3)
+    const COUNTRIES = ["Afghanistan","Afrique du Sud","Albanie","Algérie","Allemagne","Andorre","Angola","Antigua-et-Barbuda","Arabie saoudite","Argentine","Arménie","Australie","Autriche","Azerbaïdjan","Bahamas","Bahreïn","Bangladesh","Barbade","Belgique","Belize","Bénin","Bhoutan","Biélorussie","Birmanie","Bolivie","Bosnie-Herzégovine","Botswana","Brésil","Brunei","Bulgarie","Burkina Faso","Burundi","Cambodge","Cameroun","Canada","Cap-Vert","Centrafrique","Chili","Chine","Chypre","Colombie","Comores","Congo","Corée du Nord","Corée du Sud","Costa Rica","Côte d'Ivoire","Croatie","Cuba","Danemark","Djibouti","Dominique","Égypte","Émirats arabes unis","Équateur","Érythrée","Espagne","Estonie","Eswatini","États-Unis","Éthiopie","Fidji","Finlande","France","Gabon","Gambie","Géorgie","Ghana","Grèce","Grenade","Guatemala","Guinée","Guinée équatoriale","Guinée-Bissau","Guyana","Haïti","Honduras","Hongrie","Inde","Indonésie","Irak","Iran","Irlande","Islande","Israël","Italie","Jamaïque","Japon","Jordanie","Kazakhstan","Kenya","Kirghizistan","Kiribati","Koweït","Laos","Lesotho","Lettonie","Liban","Liberia","Libye","Liechtenstein","Lituanie","Luxembourg","Macédoine du Nord","Madagascar","Malaisie","Malawi","Maldives","Mali","Malte","Maroc","Maurice","Mauritanie","Mexique","Moldavie","Monaco","Mongolie","Monténégro","Mozambique","Namibie","Népal","Nicaragua","Niger","Nigeria","Norvège","Nouvelle-Zélande","Oman","Ouganda","Ouzbékistan","Pakistan","Palestine","Panama","Papouasie-Nouvelle-Guinée","Paraguay","Pays-Bas","Pérou","Philippines","Pologne","Portugal","Qatar","République dominicaine","République démocratique du Congo","République tchèque","Roumanie","Royaume-Uni","Russie","Rwanda","Saint-Kitts-et-Nevis","Sainte-Lucie","Saint-Vincent-et-les-Grenadines","Salomon","Salvador","Samoa","São Tomé-et-Príncipe","Sénégal","Serbie","Seychelles","Sierra Leone","Singapour","Slovaquie","Slovénie","Somalie","Soudan","Soudan du Sud","Sri Lanka","Suède","Suisse","Suriname","Tadjikistan","Tanzanie","Tchad","Thaïlande","Timor oriental","Togo","Tonga","Trinité-et-Tobago","Tunisie","Turkménistan","Turquie","Tuvalu","Ukraine","Uruguay","Vanuatu","Vatican","Venezuela","Vietnam","Yémen","Zambie","Zimbabwe","Autre"];
+    const SECTORS = ["Agriculture", "Agroalimentaire", "Artisanat", "Automobile", "BTP / Construction", "Chimie / Parachimie", "Commerce / Distribution", "Cosmétique", "Énergie / Mines", "Finance / Assurance", "Industrie manufacturière", "Informatique / Télécoms", "Santé / Pharma", "Services aux entreprises", "Textile / Habillement", "Tourisme / Hôtellerie", "Transport / Logistique", "Autre"];
+const SECTOR_WEIGHTS = {
+    "Agriculture":              { prod: 30, fin: 15, rh: 5, mkt: 15, si: 5,  log: 15, tech: 5,  comm: 10 },
+    "Agroalimentaire":          { prod: 30, fin: 15, rh: 5, mkt: 15, si: 5,  log: 15, tech: 10, comm: 5  },
+    "Artisanat":                { prod: 25, fin: 10, rh: 5, mkt: 25, si: 5,  log: 10, tech: 5,  comm: 15 },
+    "Automobile":               { prod: 25, fin: 15, rh: 5, mkt: 15, si: 10, log: 15, tech: 10, comm: 5  },
+    "BTP / Construction":       { prod: 25, fin: 20, rh: 5, mkt: 15, si: 10, log: 15, tech: 5,  comm: 5  },
+    "Chimie / Parachimie":      { prod: 25, fin: 15, rh: 5, mkt: 15, si: 5,  log: 15, tech: 15, comm: 5  },
+    "Commerce / Distribution":  { prod: 15, fin: 15, rh: 5, mkt: 25, si: 10, log: 15, tech: 5,  comm: 10 },
+    "Cosmétique":               { prod: 25, fin: 10, rh: 5, mkt: 20, si: 5,  log: 10, tech: 10, comm: 15 },
+    "Énergie / Mines":          { prod: 25, fin: 20, rh: 5, mkt: 10, si: 10, log: 15, tech: 10, comm: 5  },
+    "Finance / Assurance":      { prod: 10, fin: 25, rh: 10, mkt: 20, si: 15, log: 5,  tech: 10, comm: 5  },
+    "Industrie manufacturière": { prod: 30, fin: 15, rh: 5, mkt: 15, si: 10, log: 15, tech: 5,  comm: 5  },
+    "Informatique / Télécoms":  { prod: 10, fin: 15, rh: 10, mkt: 20, si: 15, log: 5,  tech: 20, comm: 5  },
+    "Santé / Pharma":           { prod: 25, fin: 15, rh: 5, mkt: 15, si: 5,  log: 10, tech: 20, comm: 5  },
+    "Services aux entreprises": { prod: 10, fin: 15, rh: 15, mkt: 25, si: 15, log: 5,  tech: 10, comm: 5  },
+    "Textile / Habillement":    { prod: 25, fin: 10, rh: 5, mkt: 20, si: 5,  log: 15, tech: 5,  comm: 15 },
+    "Tourisme / Hôtellerie":    { prod: 15, fin: 15, rh: 10, mkt: 25, si: 10, log: 5,  tech: 5,  comm: 15 },
+    "Transport / Logistique":   { prod: 15, fin: 15, rh: 10, mkt: 15, si: 15, log: 20, tech: 5,  comm: 5  },
+    "Autre":                    { prod: 25, fin: 15, rh: 5, mkt: 20, si: 10, log: 10, tech: 10, comm: 5  }
+};
+
+const SECTOR_Q_MULTIPLIERS = {
+    "Agriculture": {
+        "11": 1.5, "13": 1.5, "44": 1.5, "45": 1.5,
+        "38": 0.5, "51": 0.5
+    },
+    "Agroalimentaire": {
+        "11": 1.5, "12": 1.5, "13": 1.5, "14": 1.5, "44": 1.5, "45": 1.5, "49": 1.5,
+        "38": 0.5, "51": 0.5, "53": 0.5
+    },
+    "Artisanat": {
+        "55": 1.5, "35": 1.5, "54": 1.5,
+        "14": 0.5, "51": 0.5, "53": 0.5
+    },
+    "Automobile": {
+        "11": 1.5, "15": 1.5, "49": 1.5,
+        "54": 0.5, "55": 0.5
+    },
+    "BTP / Construction": {
+        "17": 1.5, "49": 1.5, "15": 1.5,
+        "44": 0.5, "54": 0.5, "55": 0.5
+    },
+    "Chimie / Parachimie": {
+        "11": 1.5, "13": 1.5, "14": 1.5, "49": 1.5, "43": 1.5,
+        "55": 0.5
+    },
+    "Commerce / Distribution": {
+        "36": 1.5, "38": 1.5, "33": 1.5, "54": 1.5,
+        "13": 0.5, "14": 0.5, "51": 0.5
+    },
+    "Cosmétique": {
+        "11": 1.5, "14": 1.5, "44": 1.5, "49": 1.5, "55": 1.5, "54": 1.5,
+        "53": 0.5
+    },
+    "Énergie / Mines": {
+        "17": 1.5, "49": 1.5, "48": 1.5,
+        "44": 0.5, "54": 0.5, "55": 0.5
+    },
+    "Finance / Assurance": {
+        "38": 1.5, "28": 1.5, "48": 1.5,
+        "11": 0.5, "13": 0.5, "44": 0.5, "45": 0.5
+    },
+    "Industrie manufacturière": {
+        "11": 1.5, "13": 1.5, "15": 1.5, "49": 1.5,
+        "54": 0.5, "55": 0.5
+    },
+    "Informatique / Télécoms": {
+        "51": 1.5, "52": 1.5, "38": 1.5, "28": 1.5,
+        "11": 0.5, "13": 0.5, "44": 0.5, "45": 0.5
+    },
+    "Santé / Pharma": {
+        "11": 1.5, "12": 1.5, "13": 1.5, "14": 1.5, "49": 1.5, "43": 1.5,
+        "55": 0.5
+    },
+    "Services aux entreprises": {
+        "27": 1.5, "28": 1.5, "38": 1.5, "35": 1.5,
+        "11": 0.5, "13": 0.5, "44": 0.5, "45": 0.5
+    },
+    "Textile / Habillement": {
+        "44": 1.5, "54": 1.5, "55": 1.5, "11": 1.5,
+        "14": 0.5, "53": 0.5
+    },
+    "Tourisme / Hôtellerie": {
+        "38": 1.5, "54": 1.5, "55": 1.5, "35": 1.5,
+        "11": 0.5, "13": 0.5, "44": 0.5, "45": 0.5
+    },
+    "Transport / Logistique": {
+        "47": 1.5, "46": 1.5, "43": 1.5, "15": 1.5,
+        "54": 0.5, "55": 0.5
+    },
+    "Autre": {}
+};
+
+const SECTOR_THRESHOLDS = {
+    "Agriculture": {
+        "11": 7, "44": 7, "45": 7, "13": 7,
+        "51": 3, "53": 3, "52": 3, "38": 3
+    },
+    "Agroalimentaire": {
+        "11": 7, "12": 7, "13": 7, "14": 7, "44": 7, "45": 7, "49": 7, "43": 7,
+        "51": 3, "53": 3, "52": 3, "38": 3
+    },
+    "Artisanat": {
+        "55": 7, "54": 7, "35": 7,
+        "11": 3, "14": 3, "51": 3, "53": 3, "15": 3
+    },
+    "Automobile": {
+        "11": 7, "15": 7, "49": 7,
+        "54": 3, "55": 3
+    },
+    "BTP / Construction": {
+        "49": 7, "15": 7, "17": 7,
+        "54": 3, "55": 3, "44": 3
+    },
+    "Chimie / Parachimie": {
+        "11": 7, "13": 7, "14": 7, "49": 7, "43": 7,
+        "55": 3, "54": 3
+    },
+    "Commerce / Distribution": {
+        "36": 7, "33": 7, "54": 7, "38": 7,
+        "11": 3, "13": 3, "14": 3, "51": 3
+    },
+    "Cosmétique": {
+        "11": 7, "14": 7, "44": 7, "49": 7, "55": 7, "54": 7,
+        "53": 3, "51": 3
+    },
+    "Énergie / Mines": {
+        "49": 7, "48": 7, "17": 7,
+        "54": 3, "55": 3, "44": 3
+    },
+    "Finance / Assurance": {
+        "48": 7, "28": 7, "38": 7,
+        "11": 3, "13": 3, "44": 3, "45": 3
+    },
+    "Industrie manufacturière": {
+        "11": 7, "13": 7, "15": 7, "49": 7,
+        "54": 3, "55": 3
+    },
+    "Informatique / Télécoms": {
+        "51": 7, "52": 7, "38": 7, "28": 7,
+        "11": 3, "13": 3, "44": 3, "45": 3
+    },
+    "Santé / Pharma": {
+        "11": 7, "12": 7, "13": 7, "14": 7, "49": 7, "43": 7, "48": 7,
+        "55": 3, "54": 3
+    },
+    "Services aux entreprises": {
+        "27": 7, "28": 7, "38": 7, "35": 7,
+        "11": 3, "13": 3, "44": 3, "45": 3, "41": 3, "42": 3
+    },
+    "Textile / Habillement": {
+        "44": 7, "54": 7, "55": 7, "11": 7,
+        "14": 3, "51": 3, "53": 3
+    },
+    "Tourisme / Hôtellerie": {
+        "38": 7, "54": 7, "55": 7, "35": 7,
+        "11": 3, "13": 3, "44": 3, "45": 3
+    },
+    "Transport / Logistique": {
+        "47": 7, "46": 7, "43": 7, "15": 7,
+        "54": 3, "55": 3, "51": 3
+    },
+    "Autre": {}
+};
+
+const MARKET_ZONES = {
+    "UE": ["Allemagne","Autriche","Belgique","Bulgarie","Chypre","Croatie","Danemark","Espagne","Estonie","Finlande","France","Grèce","Hongrie","Irlande","Italie","Lettonie","Lituanie","Luxembourg","Malte","Pays-Bas","Pologne","Portugal","République tchèque","Roumanie","Slovaquie","Slovénie","Suède"],
+    "CEDEAO": ["Bénin","Burkina Faso","Cap-Vert","Côte d'Ivoire","Gambie","Ghana","Guinée","Guinée-Bissau","Liberia","Mali","Niger","Nigeria","Sénégal","Sierra Leone","Togo"],
+    "MAGHREB": ["Algérie","Libye","Maroc","Mauritanie","Tunisie"],
+    "AMERIQUE_NORD": ["Canada","États-Unis","Mexique"],
+    "ASIE": ["Chine","Corée du Sud","Inde","Indonésie","Japon","Malaisie","Singapour","Thaïlande","Vietnam","Bangladesh","Philippines"],
+    "MOYEN_ORIENT": ["Arabie saoudite","Bahreïn","Émirats arabes unis","Irak","Jordanie","Koweït","Liban","Oman","Qatar","Turquie"],
+    "AFRIQUE_CENTRALE": ["Cameroun","Centrafrique","Congo","Gabon","Guinée équatoriale","République démocratique du Congo","Tchad"],
+    "AFRIQUE_EST_SUD": ["Afrique du Sud","Éthiopie","Kenya","Madagascar","Maurice","Mozambique","Ouganda","Rwanda","Tanzanie","Zambie","Zimbabwe"]
+};
+
+function getMarketZones() {
+    const selected = Array.from(document.getElementById('marches').options).map(o => o.value);
+    let zones = new Set();
+    selected.forEach(country => {
+        for(let zone in MARKET_ZONES) {
+            if(MARKET_ZONES[zone].includes(country)) zones.add(zone);
+        }
+    });
+    return Array.from(zones);
+}
+
+const ZONE_REQUIREMENTS = {
+    "UE": {
+        niveau: "Très exigeant",
+        questions: {
+            "11": 8, "12": 8, "13": 8, "14": 7, "15": 7,
+            "44": 9, "45": 8, "46": 8, "48": 8, "49": 9,
+            "16": 8, "35": 7, "43": 8, "55": 6
+        }
+    },
+    "AMERIQUE_NORD": {
+        niveau: "Très exigeant",
+        questions: {
+            "11": 8, "12": 8, "13": 8, "14": 8, "15": 7,
+            "44": 9, "45": 8, "46": 8, "48": 9, "49": 9,
+            "16": 8, "35": 8, "38": 7, "43": 8
+        }
+    },
+    "CEDEAO": {
+        niveau: "Accessible",
+        questions: {
+            "11": 5, "12": 5, "13": 5,
+            "44": 5, "45": 5, "46": 5, "48": 5,
+            "16": 6, "36": 6, "33": 6, "47": 6
+        }
+    },
+    "MAGHREB": {
+        niveau: "Modéré",
+        questions: {
+            "11": 6, "12": 6, "13": 6,
+            "44": 7, "45": 6, "46": 7, "48": 7, "49": 7,
+            "16": 7, "33": 6, "35": 6
+        }
+    },
+    "MOYEN_ORIENT": {
+        niveau: "Exigeant",
+        questions: {
+            "11": 7, "12": 7, "13": 7,
+            "44": 8, "45": 7, "46": 7, "48": 8, "49": 8,
+            "16": 7, "33": 7, "35": 7, "43": 7
+        }
+    },
+    "ASIE": {
+        niveau: "Exigeant",
+        questions: {
+            "11": 8, "12": 7, "13": 7, "14": 7,
+            "44": 8, "45": 7, "46": 7, "48": 8, "49": 8,
+            "16": 7, "43": 8, "35": 6, "55": 6
+        }
+    },
+    "AFRIQUE_CENTRALE": {
+        niveau: "Accessible",
+        questions: {
+            "11": 4, "12": 5, "13": 4,
+            "44": 5, "45": 5, "46": 5, "48": 5,
+            "16": 5, "36": 6, "33": 5, "47": 6
+        }
+    },
+    "AFRIQUE_EST_SUD": {
+        niveau: "Modéré",
+        questions: {
+            "11": 5, "12": 6, "13": 5,
+            "44": 6, "45": 6, "46": 6, "48": 6, "49": 6,
+            "16": 6, "36": 6, "33": 6, "35": 5
+        }
+    }
+};
+
+function calculateMarketCompatibility(scoresParQuestion) {
+    const zonesSelectionnees = getMarketZones();
+    let results = [];
+
+    for(let zone in ZONE_REQUIREMENTS) {
+        const req = ZONE_REQUIREMENTS[zone];
+        let totalPoints = 0;
+        let totalMax = 0;
+        let points_bloquants = [];
+
+        for(let qNum in req.questions) {
+            let scoreEntreprise = scoresParQuestion[qNum] || 0;
+            let scoreAttendu = req.questions[qNum];
+            totalMax += scoreAttendu;
+            let contribution = Math.min(scoreEntreprise, scoreAttendu);
+            totalPoints += contribution;
+
+            if(scoreEntreprise < scoreAttendu - 3) {
+                points_bloquants.push({ q: qNum, ecart: scoreAttendu - scoreEntreprise });
+            }
+        }
+
+        let compatPct = totalMax > 0 ? Math.round((totalPoints / totalMax) * 100) : 0;
+        let zoneName = {"UE":"Union Européenne","CEDEAO":"CEDEAO","MAGHREB":"Maghreb","AMERIQUE_NORD":"Amérique du Nord","ASIE":"Asie","MOYEN_ORIENT":"Moyen-Orient","AFRIQUE_CENTRALE":"Afrique Centrale","AFRIQUE_EST_SUD":"Afrique Est & Sud"}[zone] || zone;
+
+        results.push({
+            zone: zone,
+            zoneName: zoneName,
+            niveau: req.niveau,
+            pct: compatPct,
+            bloquants: points_bloquants.sort((a,b) => b.ecart - a.ecart).slice(0, 3),
+            estCible: zonesSelectionnees.includes(zone)
+        });
+    }
+
+    return results.sort((a,b) => b.pct - a.pct);
+}
+
+const CONTEXTUAL_RECO = {
+    "Agroalimentaire": {
+        "49": {
+            "UE": "Certification IFS/BRC exigée par la grande distribution européenne. HACCP est le minimum. Bio (AB/Eurofeuille) ouvre le segment premium.",
+            "AMERIQUE_NORD": "Conformité FDA obligatoire. Certification SQF ou FSSC 22000 recommandée. Enregistrement FFR (Food Facility Registration) requis.",
+            "CEDEAO": "Norme harmonisée CEDEAO applicable. Certification HACCP suffisante. Vérifier les normes nationales (NS pour le Sénégal, NB pour le Burkina).",
+            "MAGHREB": "Certification Halal obligatoire. Norme NM pour le Maroc. Agrément sanitaire requis pour produits animaux.",
+            "MOYEN_ORIENT": "Certification Halal (SMIIC ou GSO) indispensable. Enregistrement auprès des autorités sanitaires locales (SFDA en Arabie, ESMA aux EAU).",
+            "ASIE": "Certifications variables : JAS pour le Japon, GB standards pour la Chine, FSSAI pour l'Inde. Halal requis pour Malaisie/Indonésie."
+        },
+        "44": {
+            "UE": "Étiquetage selon règlement INCO 1169/2011 : allergènes en gras, valeurs nutritionnelles, langue du pays, origine cacao/café obligatoire. Logo Triman pour la France.",
+            "AMERIQUE_NORD": "Nutrition Facts Panel FDA obligatoire. Étiquetage bilingue anglais/français au Canada. Allergènes selon liste FDA.",
+            "CEDEAO": "Étiquetage en français ou anglais selon le pays. Mentions ECOWAS/UEMOA. Moins contraignant mais numéro de lot obligatoire.",
+            "MAGHREB": "Étiquetage en arabe obligatoire (+ français toléré au Maroc/Tunisie). Mention Halal visible. Date de péremption en calendrier grégorien et hégirien.",
+            "MOYEN_ORIENT": "Étiquetage en arabe obligatoire. Logo Halal visible. Interdiction de certains additifs (E120, E441 d'origine porcine).",
+            "ASIE": "Étiquetage en langue locale obligatoire (japonais, chinois mandarin). Japon : très strict sur les allergènes (28 catégories)."
+        },
+        "11": {
+            "UE": "Traçabilité lot par lot exigée (Règlement CE 178/2002). Système de retrait/rappel obligatoire. Alerte RASFF en cas de non-conformité.",
+            "AMERIQUE_NORD": "Traçabilité FDA sous FSMA. Obligation de tenue de registres (Records Rule). Rappel produit sous 24h.",
+            "CEDEAO": "Exigences moins formalisées mais traçabilité recommandée pour crédibilité auprès des importateurs structurés.",
+            "MOYEN_ORIENT": "Traçabilité exigée pour produits carnés et laitiers. Certificat d'origine et d'abattage Halal traçable."
+        },
+        "43": {
+            "UE": "Respect chaîne du froid documentée. Normes ATP pour transport réfrigéré. Contrôle phytosanitaire au port d'entrée.",
+            "AMERIQUE_NORD": "Prior Notice FDA 15 jours avant arrivée. Conteneurs inspectés (USDA/APHIS pour produits végétaux).",
+            "CEDEAO": "Transport routier fréquent : vérifier état des routes, durée, température. Moins de contrôles mais risque de pertes élevé.",
+            "ASIE": "Durée de transport maritime longue (25-40 jours). Conteneurs réfrigérés obligatoires. Fumigation exigée par certains pays."
+        },
+        "48": {
+            "UE": "Vérifier TARIC pour droits de douane, accords APE (0% sur la plupart des produits CI). Certificat EUR1 ou déclaration d'origine.",
+            "AMERIQUE_NORD": "Vérifier AGOA (USA) pour préférences tarifaires. HTS code à déterminer. Droits antidumping possibles sur certains produits.",
+            "CEDEAO": "TEC CEDEAO applicable. Schéma de libéralisation des échanges (SLE). Certificat d'origine CEDEAO pour exonération.",
+            "MAGHREB": "Droits de douane souvent élevés (15-40%). Vérifier accords bilatéraux CI-Maroc, CI-Tunisie."
+        }
+    },
+    "Agriculture": {
+        "49": {
+            "UE": "Certification GlobalGAP quasi-obligatoire pour fruits/légumes frais. Certification Bio (AB) pour segment premium. Résidus de pesticides selon règlement CE 396/2005.",
+            "AMERIQUE_NORD": "Conformité USDA. Certification USDA Organic pour le bio. Limites de résidus de pesticides (EPA tolerances).",
+            "CEDEAO": "Normes nationales applicables. Certification de conformité phytosanitaire suffisante.",
+            "ASIE": "Japon : limites de résidus très strictes. Chine : certificat phytosanitaire + enregistrement des vergers exportateurs."
+        },
+        "44": {
+            "UE": "Normes d'emballage bois NIMP-15 obligatoires. Marquage phytosanitaire. Palettes traitées.",
+            "AMERIQUE_NORD": "ISPM-15 pour emballage bois. Marquage IPPC. Inspection USDA/APHIS à l'arrivée.",
+            "CEDEAO": "Emballage standard accepté. Privilégier caisses ventilées pour produits frais."
+        },
+        "11": {
+            "UE": "Traçabilité parcelle → lot → conteneur exigée. Cahier de culture obligatoire pour GlobalGAP.",
+            "AMERIQUE_NORD": "Traçabilité FSMA. Bioterrorism Act : enregistrement préalable obligatoire."
+        }
+    },
+    "Cosmétique": {
+        "49": {
+            "UE": "Dossier d'Information Produit (DIP) obligatoire. Notification CPNP avant mise sur le marché. Évaluation sécurité par toxicologue certifié. Règlement CE 1223/2009.",
+            "AMERIQUE_NORD": "Enregistrement FDA Voluntary Cosmetic Registration Program. Conformité FD&C Act. Pas d'AMM mais étiquetage strict.",
+            "CEDEAO": "Réglementation en cours d'harmonisation. Notification dans chaque pays. Certificat de vente libre (CVL) souvent demandé.",
+            "MOYEN_ORIENT": "Enregistrement produit obligatoire. Certification Halal fortement recommandée. Tests sur animaux interdits aux EAU."
+        },
+        "44": {
+            "UE": "Liste INCI obligatoire. PAO (période après ouverture). Batch number. Adresse du responsable UE (Personne Responsable).",
+            "AMERIQUE_NORD": "Ingredient listing FDA. Net weight en oz et grammes. Warnings si applicable.",
+            "MOYEN_ORIENT": "Étiquetage arabe. Mention Halal. Liste ingrédients avec origine animale clairement identifiée."
+        },
+        "14": {
+            "UE": "Tests de stabilité, challenge test microbiologique, évaluation toxicologique par expert qualifié.",
+            "AMERIQUE_NORD": "Tests de sécurité recommandés (non obligatoires mais responsabilité fabricant en cas de problème)."
+        }
+    },
+    "Artisanat": {
+        "35": {
+            "UE": "Catalogue professionnel avec storytelling (origine, savoir-faire). Fiches techniques en français/anglais. Photos haute qualité sur fond neutre.",
+            "AMERIQUE_NORD": "Mettre en avant le côté éthique, commerce équitable, Made in Africa. Marketplace type Etsy ou Amazon Handmade.",
+            "ASIE": "Packaging premium indispensable. Le Japon valorise l'artisanat africain haut de gamme."
+        },
+        "55": {
+            "UE": "Construire un récit de marque (terroir, savoir-faire ancestral). Labels commerce équitable (Fair Trade) très valorisés.",
+            "AMERIQUE_NORD": "Positionnement premium/ethnique. Storytelling sur l'impact social.",
+            "CEDEAO": "Marque moins différenciante. Compétitivité prix plus importante."
+        },
+        "36": {
+            "UE": "Boutiques spécialisées, concept stores, salons Maison&Objet et Ambiente. Agents commerciaux spécialisés décoration/artisanat.",
+            "AMERIQUE_NORD": "Distributeurs spécialisés home décor. Plateformes e-commerce. Salons NY NOW.",
+            "CEDEAO": "Vente directe possible. Marchés et foires locales. Réseaux de boutiques touristiques."
+        }
+    },
+    "Textile / Habillement": {
+        "49": {
+            "UE": "Règlement REACH pour substances chimiques. Test AZO (colorants interdits). Certification OEKO-TEX recommandée.",
+            "AMERIQUE_NORD": "Conformité CPSIA pour vêtements enfants. Tests inflammabilité (16 CFR). Marquage pays d'origine obligatoire.",
+            "CEDEAO": "Normes moins contraignantes. Certificat de conformité national suffisant."
+        },
+        "44": {
+            "UE": "Étiquetage composition fibres obligatoire (Règlement UE 1007/2011). Instructions d'entretien. Taille selon normes locales.",
+            "AMERIQUE_NORD": "Care labeling (FTC). Fiber content. Country of origin. RN/WPL number."
+        }
+    },
+    "Informatique / Télécoms": {
+        "52": {
+            "UE": "Dépôt de marque EUIPO. Brevet européen (OEB). Protection logicielle par droit d'auteur.",
+            "AMERIQUE_NORD": "Dépôt USPTO. Brevets logiciels possibles aux USA. Protection copyright.",
+            "CEDEAO": "Dépôt OAPI couvrant 17 pays. Protection marque et brevet."
+        },
+        "38": {
+            "UE": "Site web professionnel multilingue indispensable. Conformité RGPD. LinkedIn et GitHub comme vitrines.",
+            "AMERIQUE_NORD": "Présence sur Product Hunt, G2, Capterra. Site en anglais obligatoire. Conformité CCPA (Californie)."
+        }
+    },
+    "Santé / Pharma": {
+        "49": {
+            "UE": "AMM (Autorisation de Mise sur le Marché) obligatoire. Certification BPF/GMP. Marquage CE pour dispositifs médicaux.",
+            "AMERIQUE_NORD": "Approbation FDA (NDA/ANDA). Certification cGMP. Enregistrement établissement FDA.",
+            "CEDEAO": "AMM par pays (DPML en CI). Harmonisation en cours via l'AMA (Agence Africaine du Médicament).",
+            "MAGHREB": "AMM nationale requise. Équivalence avec pharmacopée européenne souvent acceptée."
+        }
+    }
+};
+
     const DIAGNOSTIC_DB = {
-        "4": { problem: "L’entreprise est en situation de saturation ou de sous-activité critique.", type: "CRITICAL", why: "Si l’entreprise est déjà à >75% de capacité, elle n’a aucune marge d’absorption d’une commande export.", impact: "<ul><li>Incapacité à honorer commandes</li><li>Retards contractuels</li><li>Perte de crédibilité internationale</li></ul>", fix: "<ul><li>Audit capacité réelle</li><li>Plan d’extension progressive</li><li>Sous-traitance sécurisée</li><li>Investissement productif planifié</li></ul>" },
-        "8": { problem: "Incapacité à absorber une hausse de production (+30%) sans surcoût majeur.", type: "CRITICAL", why: "L’export génère des pics imprévus. Si l’entreprise ne peut absorber une hausse, elle n’est pas scalable.", impact: "<ul><li>Perte d’opportunités</li><li>Refus de contrats</li><li>Explosion des coûts unitaires</li></ul>", fix: "<ul><li>Plan de montée en charge</li><li>Accords fournisseurs anticipés</li><li>Stock stratégique</li></ul>" },
+        "4": { problem: "Votre entreprise est en situation de saturation ou de sous-activité critique.", type: "CRITICAL", why: "Si Votre entreprise est déjà à >75% de capacité, elle n’a aucune marge d’absorption d’une commande export.", impact: "<ul><li>Incapacité à honorer commandes</li><li>Retards contractuels</li><li>Perte de crédibilité internationale</li></ul>", fix: "<ul><li>Audit capacité réelle</li><li>Plan d’extension progressive</li><li>Sous-traitance sécurisée</li><li>Investissement productif planifié</li></ul>" },
+        "8": { problem: "Incapacité à absorber une hausse de production (+30%) sans surcoût majeur.", type: "CRITICAL", why: "L’export génère des pics imprévus. Si Votre entreprise ne peut absorber une hausse, elle n’est pas scalable.", impact: "<ul><li>Perte d’opportunités</li><li>Refus de contrats</li><li>Explosion des coûts unitaires</li></ul>", fix: "<ul><li>Plan de montée en charge</li><li>Accords fournisseurs anticipés</li><li>Stock stratégique</li></ul>" },
         "11": { problem: "Absence de système de traçabilité complet (matières, process, distribution).", type: "CRITICAL", why: "Indispensable pour agroalimentaire, cosmétique, pharma, et exigence croissante partout.", impact: "<ul><li>Blocage douanier immédiat</li><li>Rejet sanitaire</li><li>Retrait produit impossible (risque légal)</li></ul>", fix: "<ul><li>Mise en place traçabilité lot par lot</li><li>Digitalisation des fiches suiveuses</li><li>Procédures écrites</li></ul>" },
         "12": { problem: "Absence d'un contrôle qualité formel et rigoureux.", type: "CRITICAL", why: "Sans contrôle qualité structuré, le risque de non-conformité à l'arrivée est maximal.", impact: "<ul><li>Litiges commerciaux</li><li>Retours marchandise coûteux</li><li>Perte immédiate de l'importateur</li></ul>", fix: "<ul><li>Procédures QC formalisées</li><li>Fiches de contrôle à chaque étape</li><li>Responsable qualité désigné</li></ul>" },
         "13": { problem: "Infrastructures de production non conformes aux standards internationaux.", type: "CRITICAL", why: "C'est une condition sine qua non d’accès aux marchés réglementés (UE, USA...).", impact: "<ul><li>Non conformité produit</li><li>Impossibilité d'obtenir les certifications</li><li>Fermeture des marchés structurés</li></ul>", fix: "<ul><li>Audit technique immédiat</li><li>Plan de mise à niveau des équipements</li></ul>" },
@@ -351,121 +815,173 @@
         "55": { problem: "Absence de politique de marque forte.", type: "STRUCTURAL", why: "La marque renforce la différenciation et la fidélisation.", impact: "<ul><li>Concurrence uniquement sur le prix</li><li>Client volatile</li></ul>", fix: "<ul><li>Définition identité marque claire</li><li>Cohérence communication</li></ul>" }
     };
 
-    // STRUCTURE DES QUESTIONS (IDENTIQUE V7.3)
+const HELP_TEXTS = {
+        "1": "Listez les principaux produits que vous vendez ou souhaitez exporter.",
+        "2": "Brute = tel que récolté. Semi = 1ère transformation. Transformé = produit fini prêt à l'emploi.",
+        "3": "Précisez la quantité totale que vous produisez chaque année pour ces produits.",
+        "4": "Si votre usine tourne déjà à plein régime, vous ne pourrez pas absorber de grosses commandes export.",
+        "5": "Produisez-vous tous les jours, toutes les semaines ou seulement de temps en temps ?",
+        "6": "Combien de temps s'écoule entre la commande d'un client et la fin de la production ?",
+        "7": "Quelle proportion de votre production est fabriquée par d'autres entreprises (sous-traitants) ?",
+        "8": "L'export amène des pics de commandes. Avez-vous la flexibilité pour suivre sans faire exploser vos coûts ?",
+        "9": "Pouvez-vous facilement modifier votre recette, la taille du produit ou son emballage si le pays de destination l'exige ?",
+        "10": "Si vous exportez déjà, listez ici les produits que vous envoyez à l'étranger.",
+        "11": "Êtes-vous capable de retrouver l'origine exacte d'un lot en cas de problème sanitaire à la douane ?",
+        "12": "Vérifiez-vous rigoureusement la qualité à chaque étape (matières premières, production, emballage) ?",
+        "13": "Vos machines et locaux respectent-ils les normes d'hygiène et de sécurité internationales ?",
+        "14": "Faites-vous analyser vos produits par des laboratoires officiels pour prouver leur qualité ?",
+        "15": "Vos méthodes de travail sont-elles écrites dans des manuels, ou tout est-il dans la tête des employés ?",
+        "16": "Avez-vous calculé tous les frais annexes (transport, douane, assurance) jusqu'à la livraison finale ?",
+        "17": "Avez-vous l'argent nécessaire sur vos comptes pour payer les dépenses liées à l'exportation sans vous endetter dangereusement ?",
+        "18": "Quelle part de vos revenus actuels êtes-vous prêt à investir pour chercher des clients à l'étranger ?",
+        "19": "À l'international, les clients paient souvent après 60 ou 90 jours. Avez-vous la trésorerie pour tenir ?",
+        "20": "Avez-vous précisément estimé combien vous coûteront la mise aux normes, les emballages et les formalités douanières ?",
+        "21": "Avez-vous conscience des risques si le client ne paie pas, si la monnaie change de valeur, ou si votre banque bloque ?",
+        "22": "Utilisez-vous des assurances, des crédits documentaires ou des garanties bancaires pour être sûr d'être payé ?",
+        "23": "Vos comptes sont-ils clairs, à jour et certifiés par un professionnel pour rassurer les banques ?",
+        "24": "Utilisez-vous les aides de l'État ou des prêts bancaires spécialement créés pour aider à exporter ?",
+        "25": "Avez-vous déjà perdu de l'argent lors d'une exportation (client qui ne paie pas, frais inattendus) ?",
+        "26": "Les banques vous ont-elles déjà refusé un prêt pour financer votre entreprise ?",
+        "27": "Avez-vous un employé dont le travail spécifique est de gérer la paperasse et la logistique des exportations ?",
+        "28": "Vos employés connaissent-ils les règles douanières, les Incoterms et les contrats internationaux ?",
+        "29": "Êtes-vous déjà allé à l'étranger pour présenter vos produits dans des foires ou des salons professionnels ?",
+        "30": "Avez-vous choisi 1 ou 2 pays précis après une étude, ou essayez-vous de vendre partout au hasard ?",
+        "31": "Connaissez-vous déjà des acheteurs, des distributeurs ou des conseillers dans le pays que vous visez ?",
+        "32": "Avez-vous la preuve concrète que les consommateurs de ce pays attendent votre produit ?",
+        "33": "Avez-vous un prix différent pour chaque pays, adapté au niveau de vie des habitants sur place ?",
+        "34": "Comment choisissez-vous votre prix ? En copiant les autres, en ajoutant votre marge, ou selon le prestige de votre marque ?",
+        "35": "Avez-vous des brochures, un site et des fiches produits traduits dans la langue du pays visé ?",
+        "36": "Avez-vous des partenaires locaux (distributeurs, agents commerciaux) pour vendre et représenter votre marque sur place ?",
+        "37": "Êtes-vous accompagné par des structures spécialisées comme l'Agence Côte d'Ivoire Export, la Chambre de Commerce, etc. ?",
+        "38": "Peut-on trouver votre entreprise facilement en faisant une recherche sur Internet ou sur les réseaux sociaux ?",
+        "39": "Utilisez-vous un logiciel (CRM) pour garder la trace de vos discussions et relances avec vos clients ?",
+        "40": "Avez-vous un tableau de bord ou un logiciel pour savoir où en est chaque commande exportée (préparation, transport, livraison) ?",
+        "41": "Combien d'entreprises différentes vous fournissent vos matières premières ? (Avoir un seul fournisseur est risqué).",
+        "42": "Savez-vous exactement et en temps réel ce qu'il reste dans votre entrepôt grâce à un logiciel ?",
+        "43": "Connaissez-vous les règles de transport de vos produits (température dirigée, produits dangereux, fragilité) ?",
+        "44": "Votre emballage a-t-il les bonnes étiquettes, dans la bonne langue, exigées par le pays de destination ?",
+        "45": "Vos cartons et emballages sont-ils assez solides pour résister à un long voyage en bateau ou en avion sans s'abîmer ?",
+        "46": "Les Incoterms (FOB, CIF...) définissent qui paie le transport et qui est responsable en cas de perte ou de casse.",
+        "47": "Êtes-vous absolument sûr de pouvoir livrer le client à la date promise dans le contrat sans aucun retard ?",
+        "48": "Savez-vous où chercher pour connaître les taxes et les documents demandés par la douane du pays visé ?",
+        "49": "Avez-vous des certificats internationaux (comme ISO, HACCP, Bio) qui prouvent la qualité de vos processus ?",
+        "50": "Regardez-vous régulièrement ce que font vos concurrents étrangers et les nouvelles technologies de votre domaine ?",
+        "51": "Quel pourcentage de vos revenus dépensez-vous pour inventer de nouveaux produits ou améliorer l'existant ?",
+        "52": "Votre nom d'entreprise, votre logo ou votre recette sont-ils protégés légalement contre la copie (ex: OAPI) ?",
+        "53": "Travaillez-vous avec des écoles, des universités ou des chercheurs pour perfectionner vos produits ?",
+        "54": "Savez-vous exactement ce qu'aiment consommer les habitants du pays que vous visez ?",
+        "55": "Avez-vous une identité visuelle et une histoire d'entreprise qui donnent envie d'acheter vos produits ?"
+    };
     const structure = [
         {
             id: 'prod', title: 'd) Fonction production', weight: 25,
             questions: [
                 { type: 'multi', q: "1. Principaux produits :" },
-                { type: 'radio', q: "2. Niveau de transformation :", options: [ { t: "Brute", s: 2 }, { t: "Semi-transformé", s: 6 }, { t: "transformé", s: 10 } ]},
+                { type: 'radio', q: "2. Niveau de transformation :", noScore: true, options: [ { t: "Brute", s: 0 }, { t: "Semi-transformé", s: 0 }, { t: "Transformé", s: 0 } ]},
                 { type: 'multi', q: "3. Volume de production annuel (par produit) :" },
                 { type: 'radio', q: "4. Capacité de production utilisée (%) :", options: [ { t: "<20%", s: 2 }, { t: "20-45%", s: 5 }, { t: "46%-75%", s: 8 }, { t: ">76%", s: 10 } ]},
                 { type: 'radio', q: "5. Quelle est votre fréquence de production :", options: [ { t: "Journalière", s: 10 }, { t: "Hebdomadaire", s: 8 }, { t: "Mensuelle", s: 5 }, { t: "Trimestrielle", s: 2 }, { t: "Semestrielle", s: 2 } ]},
                 { type: 'radio', q: "6. Quel est votre délai moyen de production ?:", options: [ { t: "< 30j", s: 10 }, { t: "30-60j", s: 8 }, { t: "61-90j", s: 5 }, { t: ">90j", s: 2 } ]},
                 { type: 'radio', q: "7. Quelle part de votre production sous-traitez vous ? :", options: [ { t: "0", s: 10 }, { t: "1-30%", s: 8 }, { t: "31-70%", s: 5 }, { t: ">70%", s: 2 } ]},
-                { type: 'radio', q: "8. Disposez-vous d'une capacité de production suffisante pour répondre à une demande supplémentaire de 30 % sans surcoût ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_q: "Si oui, dans quel délai (jours) :", sub_options: [ {t:"< 30j"}, {t:"30-60j"}, {t:"61-90j"}, {t:">90j"} ] },
+                { type: 'radio', q: "8. Disposez-vous d'une capacité de production suffisante pour répondre à une demande supplémentaire de 30 % sans surcoût ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_q: "Dans quel délai (jours) :", sub_options: [ {t:"< 30j"}, {t:"30-60j"}, {t:"61-90j"}, {t:">90j"} ] },
                 { type: 'radio', q: "9. L’outil de production permet-il une adaptation du produit à coût réduit ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
                 { type: 'text', q: "10. Produits actuellement exportés (le cas échéant) :" },
-                { type: 'radio', q: "11. Disposez-vous d'un système de traçabilité de vos produits ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_type: 'check', sub_q: "Si oui, que couvre t-il ?", sub_options: [{t:"L’origine des matières premières"}, {t:"Le processus de production"}, {t:"Le conditionnement"}, {t:"La distribution"}, {t:"Autre (préciser)"}] },
-                { type: 'radio', q: "12. Avez-vous un système de contrôle qualité rigoureux ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_type: 'check', sub_q: "Si oui, sue quelle(s) partie(s) de votre process ?", sub_options: [{t:"Approvisionnement"}, {t:"Production"}, {t:"conditionnement"}, {t:"stockage"}] },
+                { type: 'radio', q: "11. Disposez-vous d'un système de traçabilité de vos produits ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_type: 'check', sub_q: "Que couvre t-il ?", sub_options: [{t:"L’origine des matières premières"}, {t:"Le processus de production"}, {t:"Le conditionnement"}, {t:"La distribution"}, {t:"Autre (préciser)"}] },
+                { type: 'radio', q: "12. Avez-vous un système de contrôle qualité rigoureux ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_type: 'check', sub_q: "Sur quelle(s) partie(s) de votre process ?", sub_options: [{t:"Approvisionnement"}, {t:"Production"}, {t:"conditionnement"}, {t:"stockage"}] },
                 { type: 'radio', q: "13. Avez-vous des équipements et infrastructures de production conformes aux standards internationaux ?", options: [ { t: "Oui", s: 10 }, { t: "non", s: 0 } ]},
-                { type: 'radio', q: "14. Effectuez-vous régulièrement des tests produits par des laboratoires agréés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si, Oui lesquels ?" },
+                { type: 'radio', q: "14. Effectuez-vous régulièrement des tests produits par des laboratoires agréés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Quels tests et quels laboratoires ?" },
                 { type: 'radio', q: "15. Vos processus internes sont-ils documentés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]}
             ]
         },
         {
             id: 'fin', title: 'e) Fonction financière', weight: 15,
             questions: [
-                { type: 'radio', q: "16. Disposez-vous d’un outil ou moyen de calcul de votre coût de revient export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui lequel ?" },
+                { type: 'radio', q: "16. Disposez-vous d’un outil ou moyen de calcul de votre coût de revient export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Lequel ?" },
                 { type: 'radio', q: "17. Quel pourcentage de votre projet export peut-être couvert par vos ressources financières actuelles ?", options: [ { t: "< 30%", s: 2 }, { t: "30%", s: 5 }, { t: "31-50%", s: 8 }, { t: ">50%", s: 10 } ]},
                 { type: 'radio', q: "18. Quelle part de votre Chiffres d’Affaires pouvez-vous consacrer au développement export ?", options: [ { t: "< 10%", s: 2 }, { t: "10%", s: 5 }, { t: "11-25%", s: 8 }, { t: ">25%", s: 10 } ]},
                 { type: 'check', q: "19. Votre entreprise a-t-elle la capacité de financer :", options: [ { t: "Un allongement des délais de paiement des clients étrangers", s: 5 }, { t: "Des investissements productifs ou commerciaux", s: 5 } ]},
-                { type: 'check', q: "20. Les coûts suivants sont-ils identifiés, chiffrés et budgétés :<br><br><b>a. Adaptation des produits</b> (normes, packaging, certifications)", options: [ { t: "Identifié", s: 3.3 }, { t: "Chiffré", s: 3.3 }, { t: "Budgété", s: 3.4 } ]},
-                { type: 'check', q: "<b>b. Frais administratifs et douaniers</b>", options: [ { t: "Identifié", s: 3.3 }, { t: "Chiffré", s: 3.3 }, { t: "Budgété", s: 3.4 } ]},
+                { type: 'check', q: "20. Les coûts suivants sont-ils identifiés, chiffrés et budgétés :<br><br>a. Adaptation des produits (normes, packaging, certifications)", options: [ { t: "Identifié", s: 3.3 }, { t: "Chiffré", s: 3.3 }, { t: "Budgété", s: 3.4 } ]},
+                { type: 'check', q: "b. Frais administratifs et douaniers", options: [ { t: "Identifié", s: 3.3 }, { t: "Chiffré", s: 3.3 }, { t: "Budgété", s: 3.4 } ]},
                 { type: 'check', q: "21. A quels risques financiers liés à l’export êtes-vous exposé ?", options: [ { t: "Non-paiement acheteur", s: 2.5 }, { t: "change", s: 2.5 }, { t: "défaillance banque", s: 2.5 } ]},
                 { type: 'check', q: "22. Disposez-vous d'outils de couverture contre les risques financiers export identifiés ?", options: [ { t: "Paiement commande", s: 2.5 }, { t: "Crédit documentaire", s: 2.5 }, { t: "Remise documentaire", s: 2.5 }, { t: "Affacturage export", s: 2.5 }, { t: "Garantie bancaire", s: 2.5 } ]},
                 { type: 'radio', q: "23. Tenez-vous une comptabilité régulièrement mise à jour et validée par un expert-comptable ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
-                { type: 'check', q: "24. Avez-vous accès à des financements dédiés à l'export ?", options: [ { t: "Préfinancement export", s: 3.3 }, { t: "Crédit de prospection", s: 3.3 }, { t: "assurance-crédit", s: 3.4 }, { t: "Autres", s: 0 } ] },
+                { type: 'check', q: "24. Avez-vous accès à des financements dédiés à l'export ?", noScore: true, options: [ { t: "Crédit à l’export", s: 0 }, { t: "Crédit documentaire", s: 0 }, { t: "Assurance prospection", s: 0 }, { t: "Assurance-crédit", s: 0 }, { t: "Autres", s: 0 } ] },
                 { type: 'text', q: "Précision (si Autres) :" },
-                { type: 'check', q: "25. L’entreprise a-t-elle déjà subi des pertes financières liées à l’export ?", options: [ { t: "impayés", s: 0 }, { t: "change", s: 0 }, { t: "surcoûts", s: 0 } ]},
-                { type: 'radio', q: "26. Avez-vous déjà rencontré des difficultés d’accès au financement bancaire ?", options: [ { t: "Oui", s: 0 }, { t: "Non", s: 10 } ], precision: "si Oui précisez" }
+                { type: 'check', q: "25. L’entreprise a-t-elle déjà subi des pertes financières liées à l’export ?", noScore: true, options: [ { t: "Impayés", s: 0 }, { t: "Change", s: 0 }, { t: "Surcoûts", s: 0 } ]},
+                { type: 'radio', q: "26. Avez-vous déjà rencontré des difficultés d’accès au financement bancaire ?", noScore: true, options: [ { t: "Oui", s: 0 }, { t: "Non", s: 0 } ], precision: "Quelles difficultés ?" }
             ]
         },
         {
             id: 'rh', title: 'f) Fonction ressources humaines', weight: 5,
             questions: [
-                { type: 'radio', q: "27. L’entreprise dispose-t-elle d’un service ou d’une personne en charge des formalités à l'export ?", options: [ { t: "Oui", s: 10 }, { t: "En cours", s: 5 }, { t: "Non", s: 0 } ]},
+                { type: 'radio', q: "27. Votre entreprise dispose-t-elle d’un service ou d’une personne en charge des formalités à l'export ?", options: [ { t: "Oui", s: 10 }, { t: "En cours", s: 5 }, { t: "Non", s: 0 } ]},
                 { type: 'radio', q: "28. Votre équipe est-elle formée aux spécificités du commerce international ?", options: [ { t: "Oui", s: 10 }, { t: "En cours", s: 5 }, { t: "Non", s: 0 } ]}
             ]
         },
         {
             id: 'mkt', title: 'g) Fonction marketing-commercialisation', weight: 20,
             questions: [
-                { type: 'radio', q: "29. Avez-vous déjà participé à des salons internationaux ou missions commerciales ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui précisez" },
-                { type: 'radio', q: "30. Vos marchés cibles sont-ils clairement identifiés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui précisez" },
+                { type: 'radio', q: "29. Avez-vous déjà participé à des salons internationaux ou missions commerciales ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "A quels salons avez vous participé ?" },
+                { type: 'radio', q: "30. Vos marchés cibles sont-ils clairement identifiés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Quels sont ces marchés cibles ?" },
                 { type: 'radio', q: "31. Avez-vous des contacts ou partenaires dans vos marchés cibles ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
                 { type: 'radio', q: "32. Votre produit/service répond-il à un besoin spécifique sur les marchés export ?", options: [ { t: "❌ Pas de besoin identifié", s: 0 }, { t: "⚠ Besoin flou/incertain", s: 3 }, { t: "✓ Besoin partiellement identifié", s: 6 }, { t: "✅ Besoin clairement identifié", s: 10 } ]},
                 { type: 'radio', q: "33. Avez-vous une grille de prix adaptée à chaque marché cible ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
                 { type: 'radio', q: "34. Comment fixez-vous ou envisagez-vous fixer vos prix de vente export ?", options: [ { t: "Alignement", s: 5 }, { t: "coût réel+ marge", s: 10 }, { t: "positionnement de la marque", s: 8 } ]},
-                { type: 'check', q: "35. Votre équipe dispose t-elle des outils de communication suivants ?", options: [ { t: "Catalogue", s: 1.5 }, { t: "Site web", s: 1.5 }, { t: "Fiches", s: 1.5 }, { t: "produits", s: 1.5 }, { t: "Documentation en d'autres langues", s: 2 }, { t: "Réseaux sociaux", s: 1 }, { t: "Autres", s: 1 } ]},
+                { type: 'check', q: "35. Votre équipe dispose t-elle des outils de communication suivants ?", options: [ { t: "Catalogue", s: 2 }, { t: "Site web", s: 2 }, { t: "Fiches produits", s: 2 }, { t: "Documentation en d'autres langues", s: 2 }, { t: "Réseaux sociaux", s: 1 }, { t: "Autres", s: 1 } ]},
                 { type: 'radio', q: "36. Avec combien de distributeurs ou agents commerciaux fiables travaillez-vous?", options: [ { t: "❌ Aucun distributeur", s: 0 }, { t: "⚠ 1-2 distributeurs", s: 4 }, { t: "✓ Quelques distributeurs", s: 7 }, { t: "✅ Réseau distributeurs fiables", s: 10 } ]},
-                { type: 'radio', q: "37. Entretenez-vous des relations avec des institutions d'appui à l'export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui lesquelles" }
+                { type: 'radio', q: "37. Entretenez-vous des relations avec les institutions d'appui à l'export ?", noScore: true, options: [ { t: "Oui", s: 0 }, { t: "Non", s: 0 } ], precision: "Quelles institutions ?" }
             ]
         },
         {
             id: 'si', title: 'h) Fonction système d’information', weight: 10,
             questions: [
-                { type: 'radio', q: "38. L’entreprise dispose-t-elle d’un site internet et/ou de réseaux sociaux ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
-                { type: 'radio', q: "39. Votre entreprise utilise-t-elle des outils digitaux pour la gestion des clients et prospects ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui précisez ?" },
-                { type: 'radio', q: "40. Existe-t-il des outils ou procédures internes de suivi des opérations export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui lesquelles" }
+                { type: 'radio', q: "38. Votre entreprise dispose-t-elle d’un site internet et/ou de réseaux sociaux ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
+                { type: 'radio', q: "39. Votre entreprise utilise-t-elle des outils digitaux pour la gestion des clients et prospects ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Avec quel(s) outil(s) travaillez-vous ?" },
+                { type: 'radio', q: "40. Existe-t-il des outils ou procédures internes de suivi des opérations export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Lesquels ?" }
             ]
         },
         {
             id: 'log', title: 'i) Fonction logistique transport', weight: 10,
             questions: [
                 { type: 'radio', q: "41. Combien de fournisseurs avez-vous ?", options: [ { t: "Auto-fournisseur", s: 8 }, { t: "1", s: 2 }, { t: "2", s: 5 }, { t: "3", s: 8 }, { t: ">3", s: 10 } ]},
-                { type: 'radio', q: "42. Utilisez-vous un système automatisé de gestion de stock ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui précisez ?" },
-                { type: 'radio', q: "43. L’entreprise maîtrise-t-elle les contraintes spécifiques liées à ses produits à l’export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Si oui précisez ?" },
+                { type: 'radio', q: "42. Utilisez-vous un système automatisé de gestion de stock ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Parlez nous de votre système." },
+                { type: 'radio', q: "43. Votre entreprise maîtrise-t-elle les contraintes spécifiques liées à ses produits à l’export ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Pouvez vous développer ?" },
                 { type: 'check', q: "44. L'emballage respecte-t-il les exigences des marchés ciblés ?", options: [ { t: "étiquetage", s: 3.3 }, { t: "langues", s: 3.3 }, { t: "normes sanitaires ou techniques", s: 3.4 } ]},
                 { type: 'radio', q: "45. Le conditionnement de vos produits est-il adapté au transport international ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
-                { type: 'radio', q: "46. Connaissez-vous ces Incoterms et leur impact sur vos prix ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_type: 'check', sub_q: "Si Oui, à quels incoterms êtes-vous familiers ?", sub_options: [ { t: "FAS" }, { t: "FOB" }, { t: "CFR" }, { t: "CIF" }, { t: "EXW" }, { t: "FCA" }, { t: "CPT" }, { t: "CIP" }, { t: "DAP" }, { t: "DPU" }, { t: "DDP" } ] },
+                { type: 'radio', q: "46. Connaissez-vous les Incoterms et leur impact sur vos prix ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], sub_type: 'check', sub_q: "Lesquels de ces incoterms vous sont familiers ?", sub_options: [ { t: "FAS" }, { t: "FOB" }, { t: "CFR" }, { t: "CIF" }, { t: "EXW" }, { t: "FCA" }, { t: "CPT" }, { t: "CIP" }, { t: "DAP" }, { t: "DPU" }, { t: "DDP" } ] },
                 { type: 'radio', q: "47. Pouvez-vous garantir les délais de livraison annoncés ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]},
-                { type: 'radio', q: "48. Disposez-vous d'un moyen de connaitre les réglementations douanières de vos marchés cibles ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Oui Non ; si oui lequel" }
+                { type: 'radio', q: "48. Disposez-vous de moyens pour connaitre les réglementations douanières de vos marchés cibles ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Quels sont ces moyens ?" }
             ]
         },
         {
             id: 'tech', title: 'j) Compétitivité technologique', weight: 10,
             questions: [
-                { type: 'radio', q: "49. Disposez-vous de certifications qualité reconnues ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui lesquels" },
-                { type: 'radio', q: "50. Suivez-vous les tendances et innovations de votre secteur ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui, par quel(s) moyen(s)" },
+                { type: 'radio', q: "49. Disposez-vous de certifications qualité reconnues ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Quelles sont ces certifications ?" },
+                { type: 'radio', q: "50. Suivez-vous les tendances et innovations de votre secteur ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Par quel(s) moyen(s)" },
                 { type: 'radio', q: "51. Quel pourcentage de votre CA consacrez-vous à la R&D ?", options: [ { t: "< 10%", s: 2 }, { t: "10%", s: 5 }, { t: "11-25%", s: 8 }, { t: ">25", s: 10 } ]},
                 { type: 'check', q: "52. De quelle protection intellectuelle disposez-vous pour vos produits ?", options: [ { t: "Brevet", s: 2.5 }, { t: "Marque", s: 2.5 }, { t: "Droit d'auteur", s: 2.5 }, { t: "Dessins et modèles", s: 2.5 }, { t: "Secrets industriels", s: 2.5 }, { t: "Autres (à préciser)", s: 0 } ]},
-                { type: 'text', q: "Précision (si Autres) :" },
-                { type: 'radio', q: "53. Collaborez-vous avec des centres de recherche ou universités ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "si Oui lesquels" }
+                { type: 'radio', q: "53. Collaborez-vous avec des centres de recherche ou universités ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ], precision: "Pouvez-vous les citer ?" }
             ]
         },
         {
             id: 'comm', title: 'k) compétitivité commerciale', weight: 5,
             questions: [
                 { type: 'radio', q: "54. Les goûts et habitudes de consommation sont-ils connus ?", options: [ { t: "Oui", s: 10 }, { t: "Partiellement", s: 5 }, { t: "Non", s: 0 } ]},
-                { type: 'radio', q: "55. Existe-t-il une politique de marque dans l’entreprise ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]}
+                { type: 'radio', q: "55. Existe-t-il une politique de marque dans Votre entreprise ?", options: [ { t: "Oui", s: 10 }, { t: "Non", s: 0 } ]}
             ]
         }
     ];
 
-    // =========================================================================
-    // INITIALISATION & UI
-    // =========================================================================
     function init() {
         const sectSel = document.getElementById('secteur');
+        sectSel.innerHTML = '<option value="">-- Sélectionner --</option>';
         SECTORS.forEach(s => { const opt = document.createElement('option'); opt.value = opt.text = s; sectSel.add(opt); });
-        
-        // MODIFICATION : Remplissage liste marchés (picker)
+
         const countrySel = document.getElementById('marches_select');
         COUNTRIES.forEach(c => { const opt = document.createElement('option'); opt.value = opt.text = c; countrySel.add(opt); });
 
-        // MODIFICATION : Remplissage liste Année 2026-1900
         const anneeSel = document.getElementById('annee_creation');
+        anneeSel.innerHTML = '<option value="">-- Sélectionner --</option>';
         for(let y=2026; y>=1900; y--) {
             const opt = document.createElement('option'); opt.value = opt.text = y; anneeSel.add(opt);
         }
@@ -475,16 +991,19 @@
         structure.forEach((section, sIdx) => {
             if(section.id === 'tech') html += `<div class="part-header">III. ANALYSE DE LA COMPETITIVITE DE L'ENTREPRISE (15%)</div>`;
             html += `<div class="section-header"><span>${section.title}</span></div>`;
-            
+
             section.questions.forEach((q, qIdx) => {
                 const qId = `q_${sIdx}_${qIdx}`;
-                
+
                 let extraStyle = "";
                 let isPrecisionOther = q.q.includes("Précision (si Autres)");
                 if (isPrecisionOther) extraStyle = "display:none;";
 
-                html += `<div class="q-card" id="card_${qId}" style="${extraStyle}"><span class="q-text">${q.q}</span>`;
-                
+                let qNumMatch = q.q.match(/^\d+/);
+                let qNum = qNumMatch ? qNumMatch[0] : "";
+                let helpHtml = HELP_TEXTS[qNum] ? `<span class="help-icon" onclick="openHelp('${qNum}')">?</span>` : "";
+                html += `<div class="q-card" id="card_${qId}" style="${extraStyle}"><span class="q-text">${q.q} ${helpHtml}</span>`;
+
                 if(q.type === 'text') {
                     html += `<input type="text" class="form-control" id="${qId}" placeholder="...">`;
                 }
@@ -511,44 +1030,73 @@
                         });
                         html += `</div></div>`;
                     }
-                } 
+                }
                 else if(q.type === 'check') {
                     html += `<div class="opt-group">`;
+                    let hasAutres = false;
                     q.options.forEach(opt => {
                         let isAutres = opt.t.includes("Autres");
-                        let nextQId = `card_q_${sIdx}_${qIdx+1}`; 
-                        let onclickCall = isAutres ? `toggleCheck(this, '${nextQId}')` : `toggleCheck(this)`;
+                        if(isAutres) hasAutres = true;
+                        let onclickCall = isAutres ? `toggleCheck(this, 'prec_${qId}')` : `toggleCheck(this)`;
                         html += `<label class="opt-btn" onclick="${onclickCall}"><input type="checkbox" name="${qId}" value="${opt.s}">${opt.t}</label>`;
                     });
                     html += `</div>`;
+                    if(hasAutres) {
+                        html += `<div id="prec_${qId}" class="sub-options"><label>Veuillez préciser :</label><input type="text" class="form-control"></div>`;
+                    }
                 }
                 html += `</div>`;
             });
         });
         container.innerHTML = html;
+        setTimeout(syncProducts, 100);
     }
 
-    // --- Gestion Marchés (Nouveau système Picker) ---
+    window.syncProducts = function() {
+        const prodString = document.getElementById('q_0_0')?.value || "";
+        const products = prodString ? prodString.split('; ') : [];
+        const q2Container = document.getElementById('card_q_0_1');
+        const q3Container = document.getElementById('card_q_0_2');
+        if(!q2Container || !q3Container) return;
+
+        if(products.length === 0) {
+            q2Container.innerHTML = `<span class="q-text">2. Niveau de transformation :</span><p style="color:#777; font-size:0.9rem;"><em>Veuillez d'abord ajouter vos produits à la question 1.</em></p>`;
+            q3Container.innerHTML = `<span class="q-text">3. Volume de production annuel :</span><p style="color:#777; font-size:0.9rem;"><em>Veuillez d'abord ajouter vos produits à la question 1.</em></p>`;
+            return;
+        }
+
+        let htmlQ2 = `<span class="q-text">2. Niveau de transformation par produit : <span class="help-icon" onclick="openHelp('2')">?</span></span>`;
+        let htmlQ3 = `<span class="q-text">3. Volume de production annuel par produit : <span class="help-icon" onclick="openHelp('3')">?</span></span>`;
+
+        products.forEach((p, idx) => {
+            htmlQ2 += `<div style="margin-bottom:15px; padding:10px; background:#f9f9f9; border-radius:6px; border-left:3px solid var(--ci-orange);"><strong>${p}</strong><div class="opt-group" style="margin-top:5px;">
+                    <label class="opt-btn" onclick="handleRadio(this, 'q_0_1_${idx}', 'Brute')"><input type="radio" name="q_0_1_${idx}" value="2">Brute</label>
+                    <label class="opt-btn" onclick="handleRadio(this, 'q_0_1_${idx}', 'Semi-transformé')"><input type="radio" name="q_0_1_${idx}" value="6">Semi-transformé</label>
+                    <label class="opt-btn" onclick="handleRadio(this, 'q_0_1_${idx}', 'Transformé')"><input type="radio" name="q_0_1_${idx}" value="10">Transformé</label>
+                </div></div>`;
+            htmlQ3 += `<div style="margin-bottom:15px; padding:10px; background:#f9f9f9; border-radius:6px; border-left:3px solid var(--ci-green);"><strong>${p}</strong>
+                <input type="text" class="form-control" id="q_0_2_${idx}" placeholder="Ex: 500 tonnes" style="margin-top:5px;"></div>`;
+        });
+        q2Container.innerHTML = htmlQ2; q3Container.innerHTML = htmlQ3;
+    }
+
     window.addMarketFromSelect = function() {
         const select = document.getElementById('marches_select');
         const val = select.value;
         if(!val) return;
 
-        // Vérifier si déjà présent
         const realSelect = document.getElementById('marches');
         for(let i=0; i<realSelect.options.length; i++){
             if(realSelect.options[i].value === val) {
-                select.value = ""; return; // Déjà là
+                select.value = ""; return;
             }
         }
 
-        // Ajouter au select caché
         const opt = document.createElement('option');
         opt.value = opt.text = val;
         opt.selected = true;
         realSelect.add(opt);
 
-        // Ajouter tag visuel
         const tags = document.getElementById('marches_tags');
         const itemDiv = document.createElement('div');
         itemDiv.className = 'multi-item';
@@ -556,7 +1104,7 @@
         itemDiv.innerHTML = `<span>${val}</span> <span class="remove" onclick="removeMarket(this, '${val}')">&times;</span>`;
         tags.appendChild(itemDiv);
 
-        select.value = ""; // Reset picker
+        select.value = "";
     }
 
     window.removeMarket = function(elem, val) {
@@ -570,29 +1118,30 @@
         }
     }
 
-    // --- Gestion Multi-Input ---
     window.addItem = function(qId) {
         const input = document.getElementById('input_' + qId);
         const val = input.value.trim();
         if(!val) return;
-        
+
         const list = document.getElementById('list_' + qId);
-        
+
         const itemDiv = document.createElement('div');
         itemDiv.className = 'multi-item';
         itemDiv.dataset.value = val;
         itemDiv.innerHTML = `<span>${val}</span> <span class="remove" onclick="removeItem(this, '${qId}')">&times;</span>`;
-        
+
         list.appendChild(itemDiv);
         input.value = '';
         input.focus();
-        
+
         updateHiddenValue(qId);
+        if(qId === 'q_0_0') syncProducts();
     }
 
     window.removeItem = function(elem, qId) {
         elem.parentElement.remove();
         updateHiddenValue(qId);
+        if(qId === 'q_0_0') syncProducts();
     }
 
     window.updateHiddenValue = function(qId) {
@@ -609,24 +1158,23 @@
         const group = el.parentElement;
         Array.from(group.children).forEach(c => { c.classList.remove('selected'); c.querySelector('input').checked = false; });
         el.classList.add('selected'); el.querySelector('input').checked = true;
-        
-        // Retirer le highlight d'erreur si présent
-        document.getElementById('card_'+qId).classList.remove('error-highlight');
-        
+
+        const card = document.getElementById('card_'+qId);
+        if(card) card.classList.remove('error-highlight');
+
         const isYes = labelText.toLowerCase().includes('oui') || labelText.includes('✅') || labelText.includes('dentifié');
         if(document.getElementById('prec_'+qId)) document.getElementById('prec_'+qId).style.display = isYes ? 'block' : 'none';
         if(document.getElementById('sub_'+qId)) document.getElementById('sub_'+qId).style.display = isYes ? 'block' : 'none';
     }
-    
+
     window.toggleCheck = function(el, targetIdToToggle = null) {
         el.classList.toggle('selected');
         const chk = el.querySelector('input');
         chk.checked = !chk.checked;
-        
-        // Retirer erreur du parent
+
         const cardId = el.closest('.q-card').id;
         document.getElementById(cardId).classList.remove('error-highlight');
-        
+
         if(targetIdToToggle) {
             const targetEl = document.getElementById(targetIdToToggle);
             if(targetEl) {
@@ -640,12 +1188,9 @@
         el.classList.add('selected'); el.querySelector('input').checked = true;
     }
     window.resetDiagnostic = function() {
-        if(confirm("Attention : toutes les données seront perdues. Voulez-vous recommencer ?")) window.location.reload(); 
+        if(confirm("Attention : toutes les données seront perdues. Voulez-vous recommencer ?")) window.location.reload();
     }
 
-    // =========================================================================
-    // VALIDATION
-    // =========================================================================
     function validateQuestionnaire() {
         let missing = [];
         let firstMissing = null;
@@ -655,15 +1200,25 @@
                 const qId = `q_${sIdx}_${qIdx}`;
                 const card = document.getElementById(`card_${qId}`);
                 let answered = false;
-                
-                // Si la question est cachée (ex: précision "Autres" non cochée), on ignore
+
                 if(card.style.display === 'none') return;
 
-                if(q.type === 'text') {
+                if(qId === 'q_0_1' || qId === 'q_0_2') {
+                    let prodString = document.getElementById('q_0_0').value;
+                    let products = prodString ? prodString.split('; ') : [];
+                    if(products.length === 0) answered = true;
+                    else {
+                        answered = true;
+                        products.forEach((p, idx) => {
+                            if(qId === 'q_0_1' && !document.querySelector(`input[name="q_0_1_${idx}"]:checked`)) answered = false;
+                            if(qId === 'q_0_2' && document.getElementById(`q_0_2_${idx}`).value.trim() === "") answered = false;
+                        });
+                    }
+                }
+                else if(q.type === 'text') {
                     if(document.getElementById(qId).value.trim() !== "") answered = true;
                 }
                 else if(q.type === 'multi') {
-                     // Check input hidden (rempli par addItem)
                      if(document.getElementById(qId).value.trim() !== "") answered = true;
                 }
                 else if(q.type === 'radio') {
@@ -673,9 +1228,7 @@
                     if(document.querySelectorAll(`input[name="${qId}"]:checked`).length > 0) answered = true;
                 }
 
-                // VALIDATION SPECIALE : Si "Autre" ou "Oui" déclenche une précision, la précision est-elle remplie ?
-                // Cas Précision "Oui" (radio)
-                if(answered && q.type === 'radio' && document.getElementById(`prec_${qId}`) && document.getElementById(`prec_${qId}`).style.display === 'block') {
+                if(answered && (q.type === 'radio' || q.type === 'check') && document.getElementById(`prec_${qId}`) && document.getElementById(`prec_${qId}`).style.display === 'block') {
                     const subInp = document.getElementById(`prec_${qId}`).querySelector('input');
                     if(subInp && subInp.value.trim() === "") answered = false;
                 }
@@ -698,16 +1251,536 @@
         return true;
     }
 
-    // =========================================================================
-    // CALCUL ET AFFICHAGE
-    // =========================================================================
+window.getContextualReco = function(secteur, qNum) {
+        const zones = getMarketZones();
+        const recoSecteur = CONTEXTUAL_RECO[secteur];
+        if(!recoSecteur || !recoSecteur[qNum]) return "";
+
+        let html = "";
+        zones.forEach(zone => {
+            if(recoSecteur[qNum][zone]) {
+                let zoneName = {"UE":"Union Européenne","CEDEAO":"CEDEAO","MAGHREB":"Maghreb","AMERIQUE_NORD":"Amérique du Nord","ASIE":"Asie","MOYEN_ORIENT":"Moyen-Orient","AFRIQUE_CENTRALE":"Afrique Centrale","AFRIQUE_EST_SUD":"Afrique Est & Sud"}[zone] || zone;
+                html += `<div class="diag-block" style="background:#f0f7ff; padding:10px; border-left:3px solid #3498db; margin-top:8px; border-radius:4px;">
+                    <strong style="color:#2980b9;">📍 Spécifique ${zoneName}</strong>
+                    <div style="margin-top:5px;">${recoSecteur[qNum][zone]}</div>
+                </div>`;
+            }
+        });
+        return html;
+    }
+
+    function detectIncoherences(scoresParQuestion) {
+        const incoherences = [];
+        const partExport = parseInt(document.getElementById('part_export').value) || 0;
+        const ca = parseInt(document.getElementById('ca').value) || 0;
+        const empDeclares = parseInt(document.getElementById('emp_declares').value) || 0;
+        const empNonDeclares = parseInt(document.getElementById('emp_non_declares').value) || 0;
+        const totalEmp = empDeclares + empNonDeclares;
+        const anneeCreation = parseInt(document.getElementById('annee_creation').value) || 2026;
+        const anciennete = 2026 - anneeCreation;
+        const secteur = document.getElementById('secteur').value || "";
+        const marches = Array.from(document.getElementById('marches').options).map(o => o.value);
+        const zones = getMarketZones();
+
+        if(partExport > 10 && (scoresParQuestion["30"] || 0) === 0) {
+            incoherences.push({
+                type: "ALERTE",
+                titre: "Export déclaré mais aucun marché cible identifié",
+                detail: `Vous déclarez ${partExport}% de CA à l'export mais n'avez pas de marchés clairement identifiés (Q30). Cela suggère un export opportuniste sans stratégie, ou une erreur de saisie.`,
+                conseil: "Formalisez votre stratégie marché : identifiez 1-2 pays prioritaires avec une étude de marché structurée."
+            });
+        }
+
+        if(partExport > 10 && (scoresParQuestion["46"] || 0) === 0) {
+            incoherences.push({
+                type: "ALERTE",
+                titre: "Export actif sans maîtrise des Incoterms",
+                detail: `Vous exportez déjà (${partExport}% du CA) mais ne maîtrisez pas les Incoterms (Q46). C'est comme conduire sans connaître le code de la route.`,
+                conseil: "Formation Incoterms 2020 urgente. Risque élevé de mauvaise répartition des coûts et responsabilités."
+            });
+        }
+
+        if(partExport > 10 && (scoresParQuestion["16"] || 0) === 0) {
+            incoherences.push({
+                type: "ALERTE",
+                titre: "Export actif sans coût de revient calculé",
+                detail: `Vous exportez ${partExport}% de votre CA sans connaître votre coût de revient export (Q16). Vous vendez peut-être à perte sans le savoir.`,
+                conseil: "Calcul immédiat du coût de revient export par Incoterm (EXW, FOB, CIF minimum)."
+            });
+        }
+
+        if(ca > 500000000 && empDeclares === 0) {
+            incoherences.push({
+                type: "DONNÉES SUSPECTES",
+                titre: "Chiffre d'affaires élevé sans aucun employé déclaré",
+                detail: `CA de ${ca.toLocaleString()} FCFA mais 0 employé déclaré. Cette situation pose un risque légal majeur et un problème de crédibilité face aux partenaires internationaux.`,
+                conseil: "Régularisation urgente de la situation sociale. Aucun importateur sérieux ne travaillera avec une entreprise sans effectif déclaré."
+            });
+        }
+
+        if(empNonDeclares > 0 && empDeclares > 0 && empNonDeclares > empDeclares) {
+            incoherences.push({
+                type: "ALERTE",
+                titre: "Plus d'employés non déclarés que déclarés",
+                detail: `${empNonDeclares} non déclarés contre ${empDeclares} déclarés. Ce déséquilibre est un frein majeur à l'export : les audits sociaux (SMETA, BSCI) exigés par les importateurs européens seront un échec.`,
+                conseil: "Plan de régularisation progressive avant toute prospection export vers l'UE ou l'Amérique du Nord."
+            });
+        }
+
+        if((scoresParQuestion["12"] || 0) >= 8 && (scoresParQuestion["15"] || 0) === 0) {
+            incoherences.push({
+                type: "INCOHÉRENCE",
+                titre: "Contrôle qualité déclaré mais processus non documentés",
+                detail: "Vous déclarez un contrôle qualité rigoureux (Q12) mais vos processus ne sont pas documentés (Q15). Un contrôle qualité sans procédures écrites n'est pas auditable et ne sera pas reconnu à l'international.",
+                conseil: "Documentez vos procédures de contrôle qualité : fiches de contrôle, PV, registres."
+            });
+        }
+
+        if((scoresParQuestion["11"] || 0) >= 8 && (scoresParQuestion["12"] || 0) === 0) {
+            incoherences.push({
+                type: "INCOHÉRENCE",
+                titre: "Traçabilité déclarée mais pas de contrôle qualité",
+                detail: "Vous avez un système de traçabilité (Q11) mais pas de contrôle qualité (Q12). La traçabilité sans contrôle qualité ne sert qu'à tracer les défauts, pas à les prévenir.",
+                conseil: "Mettez en place un contrôle qualité à chaque étape couverte par votre traçabilité."
+            });
+        }
+
+        if((scoresParQuestion["49"] || 0) >= 8 && (scoresParQuestion["13"] || 0) === 0) {
+            incoherences.push({
+                type: "INCOHÉRENCE",
+                titre: "Certifications déclarées mais infrastructures non conformes",
+                detail: "Vous déclarez des certifications qualité (Q49) mais vos infrastructures ne sont pas aux standards internationaux (Q13). Vérifiez la validité et la portée réelle de vos certifications.",
+                conseil: "Faites auditer vos infrastructures par un organisme accrédité."
+            });
+        }
+
+        if((scoresParQuestion["33"] || 0) >= 8 && (scoresParQuestion["16"] || 0) === 0) {
+            incoherences.push({
+                type: "INCOHÉRENCE",
+                titre: "Prix adaptés par marché mais coût de revient inconnu",
+                detail: "Vous déclarez adapter vos prix par marché (Q33) sans connaître votre coût de revient export (Q16). Comment fixer un prix pertinent sans connaître votre plancher ?",
+                conseil: "Calculez d'abord votre coût de revient complet, puis construisez votre grille de prix par marché."
+            });
+        }
+
+        if((scoresParQuestion["36"] || 0) >= 7 && (scoresParQuestion["30"] || 0) === 0) {
+            incoherences.push({
+                type: "INCOHÉRENCE",
+                titre: "Réseau de distributeurs sans marchés cibles définis",
+                detail: "Vous avez des distributeurs (Q36) mais vos marchés cibles ne sont pas identifiés (Q30). Vos distributeurs couvrent-ils les bons marchés ?",
+                conseil: "Alignez votre réseau de distribution avec une stratégie marché formalisée."
+            });
+        }
+
+        if((scoresParQuestion["47"] || 0) >= 8 && (scoresParQuestion["42"] || 0) === 0) {
+            incoherences.push({
+                type: "INCOHÉRENCE",
+                titre: "Délais de livraison garantis sans gestion de stock",
+                detail: "Vous garantissez vos délais de livraison (Q47) mais n'avez pas de gestion de stock automatisée (Q42). Sans visibilité sur vos stocks, cette garantie est fragile.",
+                conseil: "Mettez en place un suivi de stock minimum pour sécuriser vos engagements."
+            });
+        }
+
+        if((scoresParQuestion["39"] || 0) >= 8 && (scoresParQuestion["38"] || 0) === 0) {
+            incoherences.push({
+                type: "INCOHÉRENCE",
+                titre: "Outils CRM mais aucune visibilité digitale",
+                detail: "Vous utilisez un CRM (Q39) mais n'avez ni site web ni réseaux sociaux (Q38). Vous gérez des clients que vous ne pouvez pas attirer.",
+                conseil: "Créez au minimum un site vitrine et une page LinkedIn entreprise."
+            });
+        }
+
+        if(["Agroalimentaire","Agriculture"].includes(secteur) && zones.includes("UE") && (scoresParQuestion["11"] || 0) <= 5) {
+            incoherences.push({
+                type: "BLOCAGE MARCHÉ",
+                titre: "Agroalimentaire ciblant l'UE sans traçabilité",
+                detail: "En tant qu'entreprise agroalimentaire ciblant l'Union Européenne, l'absence de traçabilité (Q11) est un blocage absolu. Le règlement CE 178/2002 l'exige sans exception.",
+                conseil: "La traçabilité doit être votre priorité n°1 avant toute démarche vers le marché européen."
+            });
+        }
+
+        if(secteur === "Cosmétique" && zones.includes("UE") && (scoresParQuestion["14"] || 0) === 0) {
+            incoherences.push({
+                type: "BLOCAGE MARCHÉ",
+                titre: "Cosmétique ciblant l'UE sans tests laboratoire",
+                detail: "Le règlement CE 1223/2009 exige un Dossier d'Information Produit (DIP) incluant des tests de sécurité par un toxicologue qualifié. Sans tests labo (Q14), l'accès au marché européen est impossible.",
+                conseil: "Identifiez un laboratoire accrédité et lancez les tests de stabilité et challenge test microbiologique."
+            });
+        }
+
+        if(zones.includes("MOYEN_ORIENT") && ["Agroalimentaire","Cosmétique"].includes(secteur) && (scoresParQuestion["49"] || 0) <= 5) {
+            incoherences.push({
+                type: "BLOCAGE MARCHÉ",
+                titre: `${secteur} ciblant le Moyen-Orient sans certification`,
+                detail: "La certification Halal est quasi-obligatoire pour votre secteur au Moyen-Orient. Sans certification reconnue (Q49), vos produits ne passeront pas.",
+                conseil: "Engagez une démarche de certification Halal (SMIIC ou organisme reconnu GCC)."
+            });
+        }
+
+        if(anciennete > 10 && parseInt(savedScores.global) < 40) {
+            incoherences.push({
+                type: "ALERTE",
+                titre: "Entreprise établie avec un score de maturité très faible",
+                detail: `Avec ${anciennete} ans d'existence et un score de ${savedScores.global}/100, l'entreprise accuse un retard significatif. Ce n'est pas un problème de jeunesse mais de structuration.`,
+                conseil: "Un accompagnement externe (consultant export ou programme ACIEX) est fortement recommandé pour rattraper le retard."
+            });
+        }
+
+        return incoherences;
+    }
+
+    function getSyntheseFonction(sectionId, niveau, secteur, zones, pct) {
+        const zoneStr = zones.length > 0 ? zones.map(z => ({"UE":"UE","CEDEAO":"CEDEAO","MAGHREB":"Maghreb","AMERIQUE_NORD":"Amérique du Nord","ASIE":"Asie","MOYEN_ORIENT":"Moyen-Orient","AFRIQUE_CENTRALE":"Afrique Centrale","AFRIQUE_EST_SUD":"Afrique Est & Sud"}[z] || z)).join(", ") : "";
+        const cibleExigeant = zones.some(z => ["UE","AMERIQUE_NORD","ASIE"].includes(z));
+        const cibleAccessible = zones.some(z => ["CEDEAO","AFRIQUE_CENTRALE"].includes(z));
+
+        const SYNTHESES = {
+            "prod": {
+                "faible": {
+                    "Agroalimentaire": `Score Production de ${pct}% : critique pour un agroalimentaire. Sans traçabilité, contrôle qualité documenté et infrastructures conformes, vos produits seront refoulés à la douane${cibleExigeant ? " européenne ou nord-américaine" : ""}. Priorité absolue avant toute démarche export.`,
+                    "Agriculture": `Score Production de ${pct}% : insuffisant pour l'export agricole. La régularité d'approvisionnement, la traçabilité parcelle-lot et le respect des LMR (limites de résidus) sont des prérequis${cibleExigeant ? " non négociables pour les marchés exigeants visés" : ""}.`,
+                    "Cosmétique": `Score Production de ${pct}% : bloquant. Les marchés cosmétiques exigent des tests de stabilité, un contrôle microbiologique et des infrastructures BPF (Bonnes Pratiques de Fabrication)${zones.includes("UE") ? ". Le DIP (Dossier d'Information Produit) européen sera impossible à constituer en l'état" : ""}.`,
+                    "Artisanat": `Score Production de ${pct}% : la production artisanale a des contraintes différentes de l'industrie, mais la régularité et la capacité à honorer des commandes répétées restent indispensables à l'export.`,
+                    "Informatique / Télécoms": `Score Production de ${pct}% : pour le numérique, la \"production\" correspond à la capacité de livraison et de déploiement. Les lacunes détectées doivent être corrigées mais ne sont pas aussi bloquantes que pour des produits physiques.`,
+                    "Textile / Habillement": `Score Production de ${pct}% : insuffisant. La qualité constante, la traçabilité des matières et le respect des normes (AZO, REACH${zones.includes("UE") ? " pour l'UE" : ""}) sont des prérequis absolus dans le textile.`,
+                    "Santé / Pharma": `Score Production de ${pct}% : critique dans le secteur pharmaceutique. Les BPF/GMP sont obligatoires et non négociables. Aucun marché n'acceptera vos produits sans conformité totale des infrastructures et processus.`,
+                    "_default": `Score Production de ${pct}% : des lacunes majeures sur votre outil de production qui bloqueront l'export${cibleExigeant ? ", en particulier vers les marchés exigeants que vous ciblez" : ""}. Restructuration prioritaire.`
+                },
+                "moyen": {
+                    "Agroalimentaire": `Score Production de ${pct}% : des bases existent mais insuffisantes pour les marchés réglementés. Renforcez la documentation des processus et la traçabilité${cibleExigeant ? " pour atteindre le niveau exigé par " + zoneStr : ""}. ${cibleAccessible ? "Le marché CEDEAO est accessible avec ce niveau, concentrez-vous y d'abord." : ""}`,
+                    "Agriculture": `Score Production de ${pct}% : votre capacité de production est correcte mais la formalisation (traçabilité, cahier de culture, analyse de résidus) doit progresser${cibleExigeant ? " pour satisfaire les exigences de " + zoneStr : ""}.`,
+                    "Cosmétique": `Score Production de ${pct}% : fondations présentes mais les certifications et tests laboratoire doivent être renforcés${zones.includes("UE") ? ". Le marché UE exige un dossier complet (DIP, évaluation toxicologique)" : ""}.`,
+                    "Artisanat": `Score Production de ${pct}% : bonne base artisanale. Travaillez la régularité des lots et la documentation pour rassurer les importateurs${cibleExigeant ? " des marchés exigeants" : ""}.`,
+                    "Informatique / Télécoms": `Score Production de ${pct}% : capacité de livraison correcte. Formalisez vos processus de développement et de déploiement pour gagner en crédibilité.`,
+                    "Textile / Habillement": `Score Production de ${pct}% : capacité industrielle correcte mais la conformité aux normes internationales doit être renforcée${zones.includes("UE") ? " (REACH, OEKO-TEX)" : ""}.`,
+                    "_default": `Score Production de ${pct}% : des bases existent mais nécessitent un renforcement${cibleExigeant ? " significatif pour les marchés exigeants visés (" + zoneStr + ")" : ""}. ${cibleAccessible ? "Le niveau actuel peut suffire pour les marchés CEDEAO/Afrique." : ""}`
+                },
+                "fort": {
+                    "Agroalimentaire": `Score Production de ${pct}% : excellente maîtrise de l'outil de production. Vos capacités, traçabilité et contrôle qualité sont au niveau requis${cibleExigeant ? " pour les marchés exigeants (" + zoneStr + ")" : ""}. Capitalisez sur cet atout.`,
+                    "Agriculture": `Score Production de ${pct}% : très bonne capacité de production agricole. La traçabilité et la régularité sont vos forces pour convaincre les importateurs.`,
+                    "Cosmétique": `Score Production de ${pct}% : outil de production solide. Vous avez les fondations pour constituer les dossiers réglementaires exigés à l'international.`,
+                    "_default": `Score Production de ${pct}% : votre outil de production est un atout majeur pour l'export. Maintenez ce niveau et concentrez vos efforts sur les autres fonctions.`
+                }
+            },
+            "fin": {
+                "faible": {
+                    "Agroalimentaire": `Score Finance de ${pct}% : dangereux. L'agroalimentaire export consomme énormément de BFR (matières premières, délais de paiement 60-90j, stockage). Sans structure financière solide, la première commande sérieuse peut mettre l'entreprise en péril.`,
+                    "Artisanat": `Score Finance de ${pct}% : l'artisanat peut démarrer l'export avec peu de moyens (e-commerce, petites commandes), mais le minimum — coût de revient maîtrisé et trésorerie pour 3 mois — doit être en place.`,
+                    "Informatique / Télécoms": `Score Finance de ${pct}% : dans le numérique, les coûts export sont plus faibles (pas de logistique physique) mais le BFR reste important (délais de paiement, investissement commercial). Structurez vos finances.`,
+                    "_default": `Score Finance de ${pct}% : structure financière insuffisante pour soutenir un projet export. Risque élevé de blocage dès la première opération internationale${cibleExigeant ? ", surtout vers " + zoneStr + " où les exigences sont élevées" : ""}.`
+                },
+                "moyen": {
+                    "Agroalimentaire": `Score Finance de ${pct}% : les bases sont là mais les outils de sécurisation (Crédoc, assurance-crédit, affacturage) doivent être mis en place avant les premières expéditions${cibleExigeant ? " vers " + zoneStr : ""}.`,
+                    "_default": `Score Finance de ${pct}% : capacité financière correcte mais les outils de couverture des risques et la maîtrise du coût de revient export doivent progresser. ${cibleAccessible ? "Suffisant pour démarrer en CEDEAO avec des commandes modestes." : ""}`
+                },
+                "fort": {
+                    "_default": `Score Finance de ${pct}% : bonne assise financière. Vous avez les moyens de soutenir un développement export. Assurez-vous d'utiliser les dispositifs d'appui disponibles (assurance prospection, financement ACIEX).`
+                }
+            },
+            "rh": {
+                "faible": {
+                    "_default": `Score RH de ${pct}% : absence de compétences export identifiées. Sans personne dédiée ou formée au commerce international, les erreurs documentaires, douanières et contractuelles sont inévitables.`
+                },
+                "moyen": {
+                    "_default": `Score RH de ${pct}% : des compétences partielles existent. Complétez par une formation ciblée (Incoterms, documentation export, réglementation douanière${cibleExigeant ? " des marchés visés" : ""}).`
+                },
+                "fort": {
+                    "_default": `Score RH de ${pct}% : votre équipe a les compétences export nécessaires. Veillez à la formation continue et à la transmission des savoirs.`
+                }
+            },
+            "mkt": {
+                "faible": {
+                    "Agroalimentaire": `Score Marketing de ${pct}% : critique. Sans identification des marchés, sans connaissance des besoins locaux et sans réseau de distribution, l'agroalimentaire ivoirien ne se vend pas tout seul${cibleExigeant ? " — surtout sur " + zoneStr + " où la concurrence est féroce" : ""}.`,
+                    "Artisanat": `Score Marketing de ${pct}% : l'artisanat vit par son marketing (storytelling, image de marque, positionnement premium). Ce score est particulièrement pénalisant pour votre secteur.`,
+                    "Cosmétique": `Score Marketing de ${pct}% : dans la cosmétique, le marketing est la moitié du succès. Sans positionnement clair, packaging attractif et réseau de distribution, le produit ne percera pas${cibleExigeant ? " sur " + zoneStr : ""}.`,
+                    "_default": `Score Marketing de ${pct}% : absence de stratégie commerciale export structurée. Sans marchés identifiés, sans outils de communication adaptés et sans réseau, la prospection sera inefficace.`
+                },
+                "moyen": {
+                    "Artisanat": `Score Marketing de ${pct}% : des bases marketing existent. Pour l'artisanat, renforcez le storytelling (origine, savoir-faire), les visuels professionnels et la présence sur les marketplaces${zones.includes("UE") ? " européennes (Etsy, Amazon Handmade)" : ""}.`,
+                    "_default": `Score Marketing de ${pct}% : des bases commerciales existent mais insuffisantes. Renforcez l'identification des marchés prioritaires et les outils de communication${cibleExigeant ? " multilingues pour " + zoneStr : ""}.`
+                },
+                "fort": {
+                    "_default": `Score Marketing de ${pct}% : bonne maîtrise commerciale. Votre connaissance des marchés et vos outils de prospection sont des atouts. Continuez à développer votre réseau de distributeurs.`
+                }
+            },
+            "si": {
+                "faible": {
+                    "Informatique / Télécoms": `Score SI de ${pct}% : paradoxal pour une entreprise tech. Votre propre digitalisation (site web, CRM, suivi opérations) devrait être exemplaire et servir de vitrine.`,
+                    "_default": `Score SI de ${pct}% : absence de présence digitale et d'outils de suivi. Le premier réflexe d'un acheteur international est de googler votre entreprise — s'il ne trouve rien, il passe au suivant.`
+                },
+                "moyen": {
+                    "_default": `Score SI de ${pct}% : présence digitale partielle. ${cibleExigeant ? "Pour les marchés visés, un site web professionnel en anglais et un CRM sont le minimum." : "Continuez à développer votre visibilité en ligne."}`
+                },
+                "fort": {
+                    "_default": `Score SI de ${pct}% : bonne maturité digitale. Votre visibilité en ligne et vos outils de gestion sont des accélérateurs pour l'export.`
+                }
+            },
+            "log": {
+                "faible": {
+                    "Agroalimentaire": `Score Logistique de ${pct}% : bloquant pour l'agroalimentaire. La chaîne du froid, l'emballage conforme, la maîtrise des Incoterms et la connaissance des réglementations douanières sont des impératifs absolus${cibleExigeant ? " pour " + zoneStr : ""}.`,
+                    "Agriculture": `Score Logistique de ${pct}% : la logistique agricole (conditionnement, transport, normes phytosanitaires) est votre maillon faible. Les avaries et blocages douaniers seront fréquents.`,
+                    "_default": `Score Logistique de ${pct}% : lacunes majeures. L'emballage, le transport, les Incoterms et la réglementation douanière doivent être maîtrisés avant la première expédition.`
+                },
+                "moyen": {
+                    "Agroalimentaire": `Score Logistique de ${pct}% : des bases logistiques existent mais l'emballage${cibleExigeant ? " (étiquetage conforme " + zoneStr + ")" : ""}, les Incoterms et la réglementation douanière doivent être renforcés.`,
+                    "_default": `Score Logistique de ${pct}% : capacité logistique partielle. Renforcez la connaissance des Incoterms et des réglementations douanières${cibleExigeant ? " de " + zoneStr : ""} avant les premières expéditions.`
+                },
+                "fort": {
+                    "_default": `Score Logistique de ${pct}% : bonne maîtrise logistique. Vos capacités d'emballage, transport et gestion douanière sont adaptées à l'export.`
+                }
+            },
+            "tech": {
+                "faible": {
+                    "Informatique / Télécoms": `Score Tech de ${pct}% : préoccupant pour une entreprise du numérique. La R&D, la propriété intellectuelle et la veille technologique sont le cœur de votre compétitivité. Sans elles, vous êtes vulnérable.`,
+                    "Santé / Pharma": `Score Tech de ${pct}% : critique pour le secteur pharmaceutique. Les certifications, la R&D et la propriété intellectuelle sont des conditions d'accès au marché, pas des options.`,
+                    "Agroalimentaire": `Score Tech de ${pct}% : les certifications (HACCP, ISO 22000${zones.includes("UE") ? ", IFS/BRC" : ""}) sont indispensables. En revanche la R&D est moins critique — concentrez-vous sur les certifications d'abord.`,
+                    "Artisanat": `Score Tech de ${pct}% : pour l'artisanat, la R&D au sens industriel est secondaire. Concentrez-vous sur la protection de votre marque (dépôt OAPI) et la veille sur les tendances de votre marché.`,
+                    "_default": `Score Tech de ${pct}% : faible niveau d'innovation et de protection. Les certifications et la propriété intellectuelle doivent être renforcées selon les exigences de votre marché.`
+                },
+                "moyen": {
+                    "Artisanat": `Score Tech de ${pct}% : correct pour l'artisanat. Assurez-vous que votre marque est déposée (OAPI) et que vous suivez les tendances de votre marché.`,
+                    "_default": `Score Tech de ${pct}% : niveau d'innovation et de certification partiel. ${cibleExigeant ? "Les marchés visés (" + zoneStr + ") exigent des certifications reconnues." : "Poursuivez la démarche de certification."}`
+                },
+                "fort": {
+                    "_default": `Score Tech de ${pct}% : bonne compétitivité technologique. Vos certifications et votre capacité d'innovation sont des avantages concurrentiels à valoriser.`
+                }
+            },
+            "comm": {
+                "faible": {
+                    "Artisanat": `Score Commercial de ${pct}% : critique pour l'artisanat où la marque et la connaissance du consommateur sont tout. Sans politique de marque et sans connaissance des goûts locaux, vous serez en concurrence uniquement sur le prix.`,
+                    "Cosmétique": `Score Commercial de ${pct}% : la cosmétique est un marché d'image. Sans marque forte et sans adaptation aux goûts locaux${zones.includes("ASIE") ? " (le marché asiatique a des attentes très spécifiques)" : ""}, la pénétration sera impossible.`,
+                    "_default": `Score Commercial de ${pct}% : méconnaissance des consommateurs cibles et absence de politique de marque. Cela fragilise votre positionnement et vous expose à la guerre des prix.`
+                },
+                "moyen": {
+                    "_default": `Score Commercial de ${pct}% : connaissance partielle du marché. Approfondissez l'étude des goûts locaux${cibleExigeant ? " sur " + zoneStr : ""} et structurez votre identité de marque.`
+                },
+                "fort": {
+                    "_default": `Score Commercial de ${pct}% : bonne compétitivité commerciale. Votre connaissance du marché et votre image de marque sont des leviers de différenciation.`
+                }
+            }
+        };
+
+        let sectionData = SYNTHESES[sectionId];
+        if(!sectionData) return "Analyse non disponible.";
+
+        let niveauData = sectionData[niveau];
+        if(!niveauData) return "Analyse non disponible.";
+
+        return niveauData[secteur] || niveauData["_default"] || "Analyse non disponible.";
+    }
+
+    function getVerdictContextualise(scoreGlobal, secteur) {
+        const anneeCreation = parseInt(document.getElementById('annee_creation').value) || 2026;
+        const anciennete = 2026 - anneeCreation;
+        const ca = parseInt(document.getElementById('ca').value) || 0;
+        const empDeclares = parseInt(document.getElementById('emp_declares').value) || 0;
+        const empNonDeclares = parseInt(document.getElementById('emp_non_declares').value) || 0;
+        const totalEmp = empDeclares + empNonDeclares;
+        const partExport = parseInt(document.getElementById('part_export').value) || 0;
+        const zones = getMarketZones();
+        const cibleExigeant = zones.some(z => ["UE","AMERIQUE_NORD","ASIE"].includes(z));
+
+        let profil = "";
+        if(anciennete <= 3) profil = "startup";
+        else if(anciennete <= 7) profil = "jeune";
+        else if(anciennete <= 15) profil = "etablie";
+        else profil = "mature";
+
+        let taille = "";
+        if(totalEmp <= 5) taille = "micro";
+        else if(totalEmp <= 20) taille = "petite";
+        else if(totalEmp <= 100) taille = "moyenne";
+        else taille = "grande";
+
+        let score = parseInt(scoreGlobal);
+        let verdict = "";
+        let couleur = "";
+        let commentaire = "";
+
+        if(score < 50) {
+            verdict = "FAIBLE VIABILITÉ";
+            couleur = "#c0392b";
+
+            if(profil === "startup") {
+                commentaire = `Score de ${score}/100 pour une entreprise de ${anciennete} an${anciennete > 1 ? 's' : ''}. C'est normal à ce stade — l'export n'est pas encore à l'ordre du jour. Concentrez-vous d'abord sur la structuration interne (qualité, processus, finances) avant de viser l'international. Horizon réaliste : 12-18 mois de préparation.`;
+            } else if(profil === "jeune") {
+                commentaire = `Score de ${score}/100 après ${anciennete} ans d'activité. L'entreprise a passé la phase de démarrage mais n'a pas encore structuré ses fondations export. C'est le bon moment pour investir dans la mise à niveau. Un accompagnement ACIEX est recommandé.`;
+            } else if(profil === "etablie") {
+                commentaire = `Score de ${score}/100 pour une entreprise de ${anciennete} ans : c'est un retard préoccupant. Avec cette ancienneté, les bases (qualité, finances, documentation) devraient être en place. Un diagnostic approfondi s'impose pour identifier les blocages structurels.`;
+            } else {
+                commentaire = `Score de ${score}/100 pour une entreprise de ${anciennete} ans avec ${totalEmp} employés : situation critique. Ce score révèle des lacunes profondes qui ne s'expliquent pas par la jeunesse de l'entreprise. Une restructuration lourde et un accompagnement externe sont indispensables.`;
+            }
+
+            if(partExport > 0) {
+                commentaire += ` ⚠️ Vous déclarez déjà ${partExport}% de CA export avec ce niveau de maturité — vos opérations actuelles sont à haut risque.`;
+            }
+        }
+        else if(score < 75) {
+            verdict = "À RENFORCER";
+            couleur = "#F77F00";
+
+            if(profil === "startup") {
+                commentaire = `Score de ${score}/100 pour ${anciennete} an${anciennete > 1 ? 's' : ''} d'existence : encourageant. Vous avez des bases solides pour une jeune entreprise. ${cibleExigeant ? "Attention cependant, les marchés que vous ciblez exigent un niveau supérieur. Visez d'abord la CEDEAO ou le Maghreb pour faire vos armes." : "Avec 6-12 mois de renforcement ciblé, l'export devient réaliste."}`;
+            } else if(profil === "jeune") {
+                commentaire = `Score de ${score}/100 après ${anciennete} ans : progression correcte. Les fondations sont posées. Ciblez les 2-3 axes les plus faibles pour passer au niveau supérieur${cibleExigeant ? ". Les marchés exigeants (" + zones.filter(z => ["UE","AMERIQUE_NORD","ASIE"].includes(z)).join(", ") + ") nécessitent encore du travail" : ""}.`;
+            } else if(profil === "etablie" || profil === "mature") {
+                commentaire = `Score de ${score}/100 pour une entreprise de ${anciennete} ans${totalEmp > 20 ? " et " + totalEmp + " employés" : ""} : vous avez le potentiel mais pas encore le niveau. À ce stade de maturité, un score de 75+ devrait être atteignable en 3-6 mois avec les bons investissements.`;
+                if(ca > 1000000000) {
+                    commentaire += ` Avec un CA de ${(ca/1000000).toFixed(0)}M FCFA, les ressources financières ne devraient pas être un frein.`;
+                }
+            }
+        }
+        else {
+            verdict = "EXPORT READY";
+            couleur = "#009E60";
+
+            if(profil === "startup") {
+                commentaire = `Score de ${score}/100 pour ${anciennete} an${anciennete > 1 ? 's' : ''} d'existence : remarquable. Votre entreprise a été structurée dès le départ pour l'international. ${cibleExigeant ? "Vous êtes en position d'attaquer les marchés exigeants." : "Vous pouvez viser tous les marchés avec confiance."}`;
+            } else if(profil === "jeune") {
+                commentaire = `Score de ${score}/100 après ${anciennete} ans : très bonne maturité export. Vous êtes prêt à passer à l'action. Concentrez vos efforts sur la prospection active et la sécurisation des premières commandes.`;
+            } else {
+                commentaire = `Score de ${score}/100 : votre entreprise a la maturité export requise. ${totalEmp > 20 ? "Avec " + totalEmp + " employés, " : ""}${ca > 500000000 ? "un CA de " + (ca/1000000).toFixed(0) + "M FCFA et " : ""}${anciennete} ans d'expérience, les conditions sont réunies pour un développement international ambitieux.`;
+            }
+
+            if(partExport === 0) {
+                commentaire += ` Vous n'exportez pas encore — il est temps de passer à l'action.`;
+            } else if(partExport < 20) {
+                commentaire += ` Avec ${partExport}% de CA export, vous avez déjà une expérience terrain. L'objectif est maintenant d'accélérer.`;
+            }
+        }
+
+        return { verdict, couleur, commentaire };
+    }
+
+    function detectCroisements(details) {
+        const croisements = [];
+        const secteur = document.getElementById('secteur').value || "";
+        const zones = getMarketZones();
+        const cibleExigeant = zones.some(z => ["UE","AMERIQUE_NORD","ASIE"].includes(z));
+
+        const pct = {};
+        for(let key in details) {
+            pct[key] = parseInt(details[key].pct);
+        }
+
+        if(pct.prod >= 65 && pct.fin < 40) {
+            croisements.push({
+                icon: "🏭💰",
+                titre: "Capacité de produire mais pas de financer",
+                fonctions: "Production (" + pct.prod + "%) vs Finance (" + pct.fin + "%)",
+                risque: "Vous avez l'outil de production pour honorer des commandes export, mais votre structure financière ne suivra pas. La première commande sérieuse (BFR, délais de paiement 60-90j) risque de mettre l'entreprise en tension de trésorerie.",
+                action: "Sécurisez le financement AVANT de prospecter : ligne de crédit export, affacturage, ou assurance-crédit."
+            });
+        }
+
+        if(pct.fin >= 65 && pct.prod < 40) {
+            croisements.push({
+                icon: "💰🏭",
+                titre: "Moyens financiers sans capacité de production",
+                fonctions: "Finance (" + pct.fin + "%) vs Production (" + pct.prod + "%)",
+                risque: "Vous avez les ressources pour investir dans l'export mais votre outil de production n'est pas au niveau. Investir dans la prospection sans capacité de livrer est un gaspillage.",
+                action: "Investissez d'abord dans la mise à niveau de la production (qualité, traçabilité, capacité) avant toute démarche commerciale."
+            });
+        }
+
+        if(pct.mkt >= 65 && pct.log < 40) {
+            croisements.push({
+                icon: "📢🚛",
+                titre: "Savoir vendre mais pas livrer",
+                fonctions: "Marketing (" + pct.mkt + "%) vs Logistique (" + pct.log + "%)",
+                risque: "Votre force commerciale peut générer des commandes que vous ne pourrez pas honorer correctement. Emballage non conforme, Incoterms mal maîtrisés, délais non tenus = client perdu définitivement.",
+                action: "Renforcez la logistique en parallèle du marketing : emballage conforme, partenariat transitaire, formation Incoterms."
+            });
+        }
+
+        if(pct.log >= 65 && pct.mkt < 40) {
+            croisements.push({
+                icon: "🚛📢",
+                titre: "Capacité logistique sans force commerciale",
+                fonctions: "Logistique (" + pct.log + "%) vs Marketing (" + pct.mkt + "%)",
+                risque: "Vous savez livrer mais n'avez pas de clients à livrer. Votre capacité logistique est sous-exploitée.",
+                action: "Investissez dans la prospection : salons, missions commerciales, outils de communication, identification de distributeurs."
+            });
+        }
+
+        if(pct.prod >= 65 && pct.rh < 40) {
+            croisements.push({
+                icon: "🏭👥",
+                titre: "Outil de production sans compétences export",
+                fonctions: "Production (" + pct.prod + "%) vs RH (" + pct.rh + "%)",
+                risque: "Votre production est performante mais personne dans l'équipe ne maîtrise les formalités export. Les erreurs documentaires (factures, certificats d'origine, déclarations douanières) seront fréquentes et coûteuses.",
+                action: "Recrutez ou formez un responsable export, même à temps partiel. Minimum : formation Incoterms + documentation douanière."
+            });
+        }
+
+        if(pct.mkt >= 65 && pct.tech < 40 && ["Cosmétique","Santé / Pharma","Informatique / Télécoms","Chimie / Parachimie"].includes(secteur)) {
+            croisements.push({
+                icon: "📢🔬",
+                titre: "Force commerciale sans crédibilité technique",
+                fonctions: "Marketing (" + pct.mkt + "%) vs Tech (" + pct.tech + "%)",
+                risque: `Dans le secteur ${secteur}, les acheteurs internationaux exigent des certifications et des preuves techniques. Votre force commerciale ne compensera pas l'absence de crédibilité technique${cibleExigeant ? " — surtout sur les marchés exigeants que vous ciblez" : ""}.`,
+                action: "Lancez une démarche de certification prioritaire avant d'intensifier la prospection."
+            });
+        }
+
+        if(pct.si < 40 && pct.mkt >= 65) {
+            croisements.push({
+                icon: "💻📢",
+                titre: "Prospection active sans visibilité digitale",
+                fonctions: "SI (" + pct.si + "%) vs Marketing (" + pct.mkt + "%)",
+                risque: "Vous prospectez activement mais quand un acheteur potentiel vous cherche en ligne, il ne trouve rien. Dans le commerce international, l'absence de site web ou de réseaux sociaux équivaut à ne pas exister.",
+                action: "Créez un site vitrine professionnel (en français + anglais minimum) et une page LinkedIn entreprise AVANT le prochain salon ou mission commerciale."
+            });
+        }
+
+        if(pct.prod >= 65 && pct.log < 40 && ["Agroalimentaire","Agriculture"].includes(secteur)) {
+            croisements.push({
+                icon: "🌾🚛",
+                titre: "Production agricole sans maîtrise logistique",
+                fonctions: "Production (" + pct.prod + "%) vs Logistique (" + pct.log + "%)",
+                risque: "En agroalimentaire, la logistique est aussi critique que la production. Un produit bien fabriqué mais mal emballé, mal étiqueté ou transporté hors chaîne du froid sera rejeté à l'arrivée.",
+                action: "Priorité : emballage conforme aux normes du marché cible, partenariat avec un transitaire spécialisé denrées périssables, formation Incoterms."
+            });
+        }
+
+        if(pct.fin < 40 && pct.prod >= 60 && pct.mkt >= 60 && pct.log >= 60) {
+            croisements.push({
+                icon: "⛓️💰",
+                titre: "La finance est votre unique maillon faible",
+                fonctions: "Finance (" + pct.fin + "%) vs reste (>60%)",
+                risque: "Votre entreprise est prête sur tous les plans sauf le financement. C'est le verrou qui bloque tout. Toutes vos autres forces sont inexploitées tant que ce problème n'est pas résolu.",
+                action: "Concentrez 100% de vos efforts sur la structuration financière : plan de trésorerie export, recherche de financement, outils de couverture des risques."
+            });
+        }
+
+        let nbFaibles = Object.values(pct).filter(p => p < 40).length;
+        let nbForts = Object.values(pct).filter(p => p >= 65).length;
+        if(nbFaibles >= 6 && nbForts <= 1) {
+            croisements.push({
+                icon: "🔴",
+                titre: "Défaillance généralisée",
+                fonctions: nbFaibles + " fonctions sur 8 en dessous de 40%",
+                risque: "Les faiblesses sont trop nombreuses et trop profondes pour être traitées une par une. L'entreprise a besoin d'une restructuration globale avant d'envisager l'export.",
+                action: "Sollicitez un accompagnement complet (programme ACIEX, consultant export) pour un plan de mise à niveau sur 12-18 mois. Ne prospectez pas tant que les fondations ne sont pas posées."
+            });
+        }
+
+        return croisements;
+    }
+
     window.calculateResults = function() {
         let globalScore = 0;
-        savedDiagnosis = []; 
+        savedDiagnosis = [];
         let labels = [];
         let radarData = [];
         let barsHtml = '';
         savedScores = { global: 0, verdict: "", details: {} };
+
+	window.scoresParQuestion = {};
+        let scoresParQuestion = window.scoresParQuestion;
+        const secteurChoisi = document.getElementById('secteur').value || "Autre";
+        const poidsActifs = SECTOR_WEIGHTS[secteurChoisi] || SECTOR_WEIGHTS["Autre"];
+	const multipliants = SECTOR_Q_MULTIPLIERS[secteurChoisi] || {};
 
         structure.forEach((section, sIdx) => {
             let sScore = 0; let sMax = 0;
@@ -715,8 +1788,18 @@
                 const qId = `q_${sIdx}_${qIdx}`;
                 let qVal = 0;
                 let maxQ = 10;
-                
-                if(q.type === 'radio') {
+
+                if(qId === 'q_0_1') {
+                    let products = (document.getElementById('q_0_0').value || "").split('; ').filter(Boolean);
+                    if(products.length > 0) {
+                        let total = 0;
+                        products.forEach((p, idx) => {
+                            let sel = document.querySelector(`input[name="q_0_1_${idx}"]:checked`);
+                            if(sel) total += parseFloat(sel.value);
+                        });
+                        qVal = total / products.length;
+                    }
+                } else if(q.type === 'radio') {
                     const sel = document.querySelector(`input[name="${qId}"]:checked`);
                     if(sel) qVal = parseFloat(sel.value);
                 } else if(q.type === 'check') {
@@ -724,14 +1807,20 @@
                     chks.forEach(c => qVal += parseFloat(c.value));
                     if(qVal > 10) qVal = 10;
                 }
-                
-                if(q.type === 'radio' || q.type === 'check') {
-                    sScore += qVal; sMax += maxQ;
+
+                if (q.noScore !== true && (q.type === 'radio' || q.type === 'check')) {
+                    let qNum2 = q.q.replace(/<[^>]*>?/gm, '').split('.')[0].trim();
+                    let mult = multipliants[qNum2] || 1.0;
+                    sScore += qVal * mult;
+                    sMax += maxQ * mult;
+                    scoresParQuestion[qNum2] = qVal;
                 }
 
                 let qNum = q.q.replace(/<[^>]*>?/gm, '').split('.')[0].trim();
-                
-                if(qVal <= 5 && DIAGNOSTIC_DB[qNum]) {
+
+                const seuilsActifs = SECTOR_THRESHOLDS[secteurChoisi] || {};
+                const seuil = seuilsActifs[qNum] || 5;
+                if(qVal <= seuil && DIAGNOSTIC_DB[qNum]) {
                     if(!savedDiagnosis.some(d => d.qNum === qNum)) {
                         savedDiagnosis.push({ ...DIAGNOSTIC_DB[qNum], qNum: qNum });
                     }
@@ -739,29 +1828,35 @@
             });
 
             const ratio = sMax > 0 ? (sScore / sMax) : 0;
-            globalScore += ratio * section.weight;
-            
-            savedScores.details[section.id] = (ratio*100).toFixed(0);
+            let sectionWeight = poidsActifs[section.id] || section.weight;
+            let noteSection = parseFloat((ratio * sectionWeight).toFixed(1));
+	    globalScore += noteSection;
+
+            savedScores.details[section.id] = { note: noteSection, max: sectionWeight, pct: (ratio*100).toFixed(0) };
 
             labels.push(section.id.toUpperCase());
             radarData.push((ratio*100).toFixed(0));
             let color = ratio < 0.5 ? '#c0392b' : (ratio < 0.75 ? '#F77F00' : '#009E60');
-            barsHtml += `<div class="bar-wrapper"><div class="bar-labels"><span>${section.title}</span><span>${(ratio*100).toFixed(0)}%</span></div><div class="bar-bg"><div class="bar-fill" style="width:${ratio*100}%; background:${color}"></div></div></div>`;
+            barsHtml += `<div class="bar-wrapper"><div class="bar-labels"><span>${section.title}</span><span>${noteSection} / ${sectionWeight}</span></div><div class="bar-bg"><div class="bar-fill" style="width:${ratio*100}%; background:${color}"></div></div></div>`;
         });
 
         const fScoreVal = globalScore.toFixed(0);
         savedScores.global = fScoreVal;
-        document.getElementById('final-score').innerText = fScoreVal + "%";
+        document.getElementById('final-score').innerHTML = `<span style="font-size: 1.8rem;">${fScoreVal} / 100</span>`;
         document.getElementById('bars-container').innerHTML = barsHtml;
 
+        var verdictData = getVerdictContextualise(fScoreVal, secteurChoisi);
         const v = document.getElementById('verdict');
-        let vColor = "";
-        if(fScoreVal < 50) { v.innerText = "FAIBLE VIABILITE"; vColor = "#c0392b"; }
-        else if(fScoreVal < 75) { v.innerText = "À STRUCTURER"; vColor = "#F77F00"; }
-        else { v.innerText = "EXPORT READY"; vColor = "#009E60"; }
-        v.style.color = vColor;
-        document.getElementById('final-score').style.borderColor = vColor;
-        savedScores.verdict = v.innerText;
+        v.innerText = verdictData.verdict;
+        v.style.color = verdictData.couleur;
+        document.getElementById('final-score').style.borderColor = verdictData.couleur;
+        savedScores.verdict = verdictData.verdict;
+
+        let verdictBoxHtml = `
+            <div style="background:#fafafa; border:1px solid #ddd; border-left:5px solid ${verdictData.couleur}; border-radius:6px; padding:15px; margin-top:15px;">
+                <p style="font-size:0.95rem; color:#444; line-height:1.7; margin:0;">${verdictData.commentaire}</p>
+            </div>`;
+        document.getElementById('bars-container').insertAdjacentHTML('beforebegin', verdictBoxHtml);
 
         const container = document.getElementById('diagnostic-container');
         if(savedDiagnosis.length === 0) {
@@ -772,26 +1867,106 @@
             savedDiagnosis.forEach(issue => {
                 const tagClass = issue.type === 'CRITICAL' ? 'tag-crit' : 'tag-struct';
                 const cardClass = issue.type === 'CRITICAL' ? 'critical' : 'structural';
-                const typeLabel = issue.type === 'CRITICAL' ? 'CRITIQUE' : 'STRUCTURANT';
-                
+                const typeLabel = issue.type === 'CRITICAL' ? 'CRITIQUE' : 'À RENFORCER';
+
                 html += `
                 <div class="diag-card ${cardClass}">
                     <div class="diag-tag ${tagClass}">${typeLabel}</div>
                     <h4>${issue.qNum}. ${issue.problem}</h4>
                     <div class="diag-detail">
-                        <div class="diag-block"><strong>🎯 Cause / Risque</strong><div class="diag-text">${issue.why}</div></div>
+                        <div class="diag-block"><strong> Cause / Risque</strong><div class="diag-text">${issue.why}</div></div>
                         <div class="diag-block"><strong>Impact du risque</strong>${issue.impact}</div>
                         <div class="diag-block"><strong>Mesures correctives</strong>${issue.fix}</div>
+                        ${getContextualReco(secteurChoisi, issue.qNum)}
                     </div>
                 </div>`;
             });
             container.innerHTML = html;
         }
 
+        const compatResults = calculateMarketCompatibility(scoresParQuestion);
+let compatHtml = "";
+        compatResults.forEach(r => {
+            let color = r.pct < 40 ? "#c0392b" : (r.pct < 65 ? "#F77F00" : "#009E60");
+            let verdict = r.pct < 40 ? "Peu compatible" : (r.pct < 65 ? "À préparer" : "Compatible");
+            let cibleBadge = r.estCible ? `<span style="background:${color}; color:white; font-size:0.7rem; padding:2px 8px; border-radius:10px; margin-left:8px;">MARCHÉ CIBLÉ</span>` : "";
+            let opportuniteBadge = (!r.estCible && r.pct >= 65) ? `<span style="background:#3498db; color:white; font-size:0.7rem; padding:2px 8px; border-radius:10px; margin-left:8px;">💡 OPPORTUNITÉ</span>` : "";
+            let borderStyle = r.estCible ? `border:2px solid ${color};` : `border:1px solid #eee;`;
+            let bloquantsHtml = "";
+            if(r.bloquants.length > 0) {
+                let items = r.bloquants.map(b => {
+                    let diag = DIAGNOSTIC_DB[b.q];
+                    return diag ? `<li style="font-size:0.85rem; margin-bottom:3px;">${diag.problem}</li>` : "";
+                }).join("");
+                bloquantsHtml = `<div style="margin-top:8px; font-size:0.85rem; color:#c0392b;"><strong>Blocages prioritaires :</strong><ul style="margin-left:15px; margin-top:4px;">${items}</ul></div>`;
+            }
+            compatHtml += `
+                <div style="${borderStyle} border-radius:8px; padding:15px; margin-bottom:12px; border-left:5px solid ${color};">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong style="font-size:1rem;">${r.zoneName}</strong>
+                            <span style="font-size:0.8rem; color:#999; margin-left:8px;">(${r.niveau})</span>
+                            ${cibleBadge}${opportuniteBadge}
+                        </div>
+                        <div style="text-align:right;">
+                            <span style="font-size:1.3rem; font-weight:bold; color:${color};">${r.pct}%</span>
+                            <div style="font-size:0.75rem; color:${color}; font-weight:600;">${verdict}</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <div class="bar-bg"><div class="bar-fill" style="width:${r.pct}%; background:${color};"></div></div>
+                    </div>
+                    ${bloquantsHtml}
+                </div>`;
+        });
+        document.getElementById('market-compat-content').innerHTML = compatHtml;
+
+        const incoherences = detectIncoherences(scoresParQuestion);
+        let incoHtml = "";
+        if(incoherences.length > 0) {
+            incoHtml += `<div style="background:#fff8f0; border:2px solid #e67e22; border-radius:10px; padding:20px; margin-bottom:20px;">
+                <h4 style="color:#e67e22; margin-bottom:15px; font-size:1.1rem;">⚠️ ${incoherences.length} INCOHÉRENCE${incoherences.length > 1 ? 'S' : ''} DÉTECTÉE${incoherences.length > 1 ? 'S' : ''}</h4>`;
+            incoherences.forEach(inc => {
+                let iconColor = inc.type === "BLOCAGE MARCHÉ" ? "#c0392b" : (inc.type === "INCOHÉRENCE" ? "#e67e22" : (inc.type === "DONNÉES SUSPECTES" ? "#8e44ad" : "#d35400"));
+                let icon = inc.type === "BLOCAGE MARCHÉ" ? "🚫" : (inc.type === "INCOHÉRENCE" ? "🔄" : (inc.type === "DONNÉES SUSPECTES" ? "❓" : "⚠️"));
+                incoHtml += `
+                    <div style="background:white; border-left:4px solid ${iconColor}; padding:12px 15px; margin-bottom:10px; border-radius:4px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <strong style="color:${iconColor};">${icon} ${inc.titre}</strong>
+                            <span style="font-size:0.7rem; background:${iconColor}; color:white; padding:2px 8px; border-radius:10px;">${inc.type}</span>
+                        </div>
+                        <p style="font-size:0.9rem; color:#555; margin-bottom:6px;">${inc.detail}</p>
+                        <p style="font-size:0.85rem; color:${iconColor}; font-weight:600;">→ ${inc.conseil}</p>
+                    </div>`;
+            });
+            incoHtml += `</div>`;
+        }
+        document.getElementById('incoherences-container').innerHTML = incoHtml;
+
+        const croisements = detectCroisements(savedScores.details);
+        let croisHtml = "";
+        if(croisements.length > 0) {
+            croisHtml += `<div style="background:#f5f0ff; border:2px solid #8e44ad; border-radius:10px; padding:20px; margin-bottom:20px;">
+                <h4 style="color:#8e44ad; margin-bottom:15px; font-size:1.1rem;">🔗 DIAGNOSTIC CROISÉ — ${croisements.length} COMBINAISON${croisements.length > 1 ? 'S' : ''} À RISQUE</h4>`;
+            croisements.forEach(cr => {
+                croisHtml += `
+                    <div style="background:white; border-left:4px solid #8e44ad; padding:12px 15px; margin-bottom:10px; border-radius:4px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:5px;">
+                            <strong style="color:#6c3483;">${cr.icon} ${cr.titre}</strong>
+                            <span style="font-size:0.75rem; background:#e8daef; color:#6c3483; padding:3px 10px; border-radius:10px; font-weight:600;">${cr.fonctions}</span>
+                        </div>
+                        <p style="font-size:0.9rem; color:#555; margin-bottom:6px;">${cr.risque}</p>
+                        <p style="font-size:0.85rem; color:#8e44ad; font-weight:600;">→ ${cr.action}</p>
+                    </div>`;
+            });
+            croisHtml += `</div>`;
+        }
+        document.getElementById('croisements-container').innerHTML = croisHtml;
+
         const dateJour = new Date().toLocaleDateString();
         const nomEntreprise = document.getElementById('denomination').value || 'Entreprise Inconnue';
         const secteur = document.getElementById('secteur').value || '-';
-        
+
         document.getElementById('report-header').innerHTML = `
             <h2>DIAGNOSTIC EXPORT : ${nomEntreprise}</h2>
             <div style="font-size:0.9rem; margin-top:5px; color:#555;">
@@ -806,19 +1981,66 @@
             data: { labels: labels, datasets: [{ label: 'Maturité', data: radarData, backgroundColor: 'rgba(247, 127, 0, 0.2)', borderColor: '#F77F00', borderWidth: 2 }] },
             options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } }
         });
+
+        document.getElementById('onglets-resultats').style.display = 'flex';
+
+        let analyseHtml = "<p style='margin-bottom:20px; color:#555; font-size:1rem;'>Ce tableau présente une évaluation détaillée de votre maturité export pour chaque fonction de l'entreprise.</p>";
+
+        const zones = getMarketZones();
+
+        structure.forEach((section) => {
+            let detail = savedScores.details[section.id];
+            let pct = parseInt(detail.pct);
+            let appreciation = "";
+            let color = "";
+            let synthese = "";
+
+            if(pct < 50) {
+                appreciation = "FAIBLE";
+                color = "#c0392b";
+                synthese = getSyntheseFonction(section.id, "faible", secteurChoisi, zones, pct);
+            } else if (pct < 75) {
+                appreciation = "À RENFORCER";
+                color = "#F77F00";
+                synthese = getSyntheseFonction(section.id, "moyen", secteurChoisi, zones, pct);
+            } else {
+                appreciation = "PERFORMANT";
+                color = "#009E60";
+                synthese = getSyntheseFonction(section.id, "fort", secteurChoisi, zones, pct);
+            }
+
+            let nomFonction = section.title.substring(3).trim();
+
+            analyseHtml += `
+            <div style="border-left: 5px solid ${color}; background: #fdfdfd; padding: 20px; margin-bottom: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap: wrap; gap: 10px;">
+                    <h4 style="color:var(--primary); margin:0; font-size:1.1rem; text-transform:uppercase;">${nomFonction}</h4>
+                    <span style="background:${color}; color:white; padding:5px 15px; border-radius:20px; font-weight:bold; font-size:0.9rem;">Note : ${detail.note} / ${detail.max} - ${appreciation}</span>
+                </div>
+                <p style="font-size:0.95rem; color:#444; margin:0;"><strong>Analyse :</strong> ${synthese}</p>
+            </div>`;
+        });
+
+        document.getElementById('analyse-fonctions-container').innerHTML = analyseHtml;
     }
 
     function collectFullData() {
         const info = {
             denomination: document.getElementById('denomination').value || "",
             annee: document.getElementById('annee_creation').value || "",
-            juridique: document.querySelector('input[name="juridique"]:checked')?.value || "",
+            juridique: document.querySelector('input[name="juridique"]:checked')?.value === 'Autre' ? "Autre : " + document.getElementById('juridique-autre').value : (document.querySelector('input[name="juridique"]:checked')?.value || ""),
             siege: document.getElementById('siege').value || "",
             rccm: document.getElementById('rccm').value || "",
             cc: document.getElementById('cc').value || "",
             secteur: document.getElementById('secteur').value || "",
             dirigeant: document.getElementById('dirigeant').value || "",
             fonction: document.getElementById('fonction').value || "",
+            genre: document.getElementById('genre').value || "",
+            age: document.getElementById('age').value || "",
+            email: document.getElementById('email').value || "",
+            telephone: document.getElementById('telephone').value || "",
+            emp_declares: document.getElementById('emp_declares').value || "",
+            emp_non_declares: document.getElementById('emp_non_declares').value || "",
             ca: document.getElementById('ca').value || "",
             part_export: document.getElementById('part_export').value || "",
             marches: Array.from(document.getElementById('marches').selectedOptions).map(opt => opt.value)
@@ -830,7 +2052,25 @@
             section.questions.forEach((q, qIdx) => {
                 const qId = `q_${sIdx}_${qIdx}`;
                 let ans = "Non répondu";
-                if(q.type === 'text' || q.type === 'multi') { 
+                if(qId === 'q_0_1' || qId === 'q_0_2') {
+                    let products = (document.getElementById('q_0_0').value || "").split('; ').filter(Boolean);
+                    if(products.length === 0) ans = "Aucun produit";
+                    else {
+                        let details = [];
+                        products.forEach((p, idx) => {
+                            if(qId === 'q_0_1') {
+                                let sel = document.querySelector(`input[name="q_0_1_${idx}"]:checked`);
+                                if(sel) details.push(p + " (" + sel.parentElement.innerText.trim() + ")");
+                            }
+                            if(qId === 'q_0_2') {
+                                let val = document.getElementById(`q_0_2_${idx}`).value;
+                                details.push(p + " : " + val);
+                            }
+                        });
+                        ans = details.join(" | ");
+                    }
+                }
+                else if(q.type === 'text' || q.type === 'multi') {
                      ans = document.getElementById(qId)?.value || "";
                 }
                 else if(q.type === 'radio') {
@@ -843,21 +2083,21 @@
                     const chks = document.querySelectorAll(`input[name="${qId}"]:checked`);
                     if(chks.length > 0) ans = Array.from(chks).map(c => c.parentElement.innerText).join(", ");
                 }
-                
+
                 if(document.getElementById('prec_'+qId) && document.getElementById('prec_'+qId).style.display === 'block') {
                     let precVal = document.getElementById('prec_'+qId).querySelector('input').value;
                     if(precVal) ans += " [Précision: " + precVal + "]";
                 }
-                
+
                 allAnswers.push({ q: q.q, a: ans });
             });
         });
 
         return {
             info: info,
-            scores: savedScores, 
-            diagnostic: savedDiagnosis, 
-            answers: allAnswers 
+            scores: savedScores,
+            diagnostic: savedDiagnosis,
+            answers: allAnswers
         };
     }
 
@@ -870,38 +2110,583 @@
 
         fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
-            mode: "no-cors", 
+            mode: "no-cors",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dataPayload)
+            body: JSON.stringify(Object.assign({type: "save"}, dataPayload))
         })
         .then(() => {
-            alert("✅ Onglet créé avec succès sur Google Sheets !");
-            btn.innerHTML = "☁️ Sauvegarder";
+            btn.innerHTML = "✅ Sauvegardé";
             btn.disabled = false;
+            setTimeout(() => { btn.innerHTML = "☁️ Sauvegarder"; }, 3000);
         })
         .catch(err => {
             console.error(err);
-            alert("⚠️ Commande envoyée (vérifiez le Sheet)."); 
+            alert("⚠️ Commande envoyée (vérifiez le Sheet).");
             btn.innerHTML = "☁️ Sauvegarder";
             btn.disabled = false;
         });
     }
 
+    window.generatePDF = async function() {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const W = 210, H = 297;
+        const VERT = [0, 122, 77];
+        const ORANGE = [247, 127, 0];
+        const GRIS = [100, 100, 100];
+        const NOIR = [51, 51, 51];
+
+        const nomEntreprise = document.getElementById('denomination').value || 'Entreprise';
+        const secteur = document.getElementById('secteur').value || '-';
+        const dateJour = new Date().toLocaleDateString('fr-FR');
+        const dirigeant = document.getElementById('dirigeant').value || '';
+        const siege = document.getElementById('siege').value || '';
+        const scoreGlobal = savedScores.global;
+        const verdict = savedScores.verdict;
+
+        pdf.setFillColor(...ORANGE);
+        pdf.rect(0, 0, W, 8, 'F');
+
+        pdf.setFillColor(...VERT);
+        pdf.rect(0, 80, W, 80, 'F');
+
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(28);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('DIAGNOSTIC EXPORT', W/2, 110, { align: 'center' });
+
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('Rapport d\'évaluation de la maturité export', W/2, 122, { align: 'center' });
+
+        pdf.setFontSize(22);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...ORANGE);
+        pdf.text(nomEntreprise.toUpperCase(), W/2, 190, { align: 'center' });
+
+        pdf.setFontSize(11);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(...GRIS);
+        pdf.text(`Secteur : ${secteur}`, W/2, 205, { align: 'center' });
+        pdf.text(`Dirigeant : ${dirigeant}`, W/2, 213, { align: 'center' });
+        pdf.text(`Siège : ${siege}`, W/2, 221, { align: 'center' });
+        pdf.text(`Date du diagnostic : ${dateJour}`, W/2, 229, { align: 'center' });
+
+        pdf.setFillColor(...ORANGE);
+        pdf.rect(0, H - 20, W, 20, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(9);
+        pdf.text('AGENCE CÔTE D\'IVOIRE EXPORT — Direction Intelligence Économique', W/2, H - 8, { align: 'center' });
+
+        pdf.addPage();
+
+        pdf.setFillColor(...VERT);
+        pdf.rect(0, 0, W, 4, 'F');
+        pdf.setFontSize(18);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...VERT);
+        pdf.text('SOMMAIRE', 20, 25);
+        pdf.setDrawColor(...ORANGE);
+        pdf.setLineWidth(0.8);
+        pdf.line(20, 29, 80, 29);
+
+        const sommaire = [
+            { num: '1', titre: 'Score global et verdict', page: '3' },
+            { num: '2', titre: 'Performance par axe fonctionnel', page: '3' },
+            { num: '3', titre: 'Radar de maturité', page: '4' },
+            { num: '4', titre: 'Compatibilité par marché', page: '5' },
+            { num: '5', titre: 'Diagnostic détaillé', page: '6' },
+            { num: '6', titre: 'Plan d\'action priorisé', page: '-' }
+        ];
+
+        let yS = 45;
+        pdf.setFontSize(12);
+        sommaire.forEach(item => {
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(...VERT);
+            pdf.text(item.num + '.', 25, yS);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(...NOIR);
+            pdf.text(item.titre, 35, yS);
+            pdf.setTextColor(...GRIS);
+            pdf.text(item.page, 185, yS, { align: 'right' });
+            pdf.setLineDashPattern([1, 1], 0);
+            pdf.setDrawColor(200, 200, 200);
+            pdf.line(35 + pdf.getTextWidth(item.titre) + 3, yS, 180, yS);
+            pdf.setLineDashPattern([], 0);
+            yS += 12;
+        });
+
+        pdf.addPage();
+
+        pdf.setFillColor(...VERT);
+        pdf.rect(0, 0, W, 4, 'F');
+
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...VERT);
+        pdf.text('1. SCORE GLOBAL', 20, 20);
+
+        let scoreColor = scoreGlobal < 50 ? [192,57,43] : (scoreGlobal < 75 ? ORANGE : VERT);
+        pdf.setDrawColor(...scoreColor);
+        pdf.setLineWidth(2);
+        pdf.circle(55, 50, 18);
+        pdf.setFontSize(20);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...scoreColor);
+        pdf.text(`${scoreGlobal}`, 55, 48, { align: 'center' });
+        pdf.setFontSize(9);
+        pdf.text('/ 100', 55, 56, { align: 'center' });
+
+        pdf.setFontSize(14);
+        pdf.text(verdict, 90, 52);
+
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...VERT);
+        pdf.text('2. PERFORMANCE PAR AXE', 20, 85);
+
+        let yB = 95;
+        const structure_ref = structure;
+        structure_ref.forEach(section => {
+            let detail = savedScores.details[section.id];
+            if(!detail) return;
+            let pct = parseInt(detail.pct);
+            let barColor = pct < 50 ? [192,57,43] : (pct < 75 ? ORANGE : VERT);
+
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(...NOIR);
+            pdf.text(section.title, 20, yB);
+            pdf.setTextColor(...GRIS);
+            pdf.text(`${detail.note} / ${detail.max}`, 185, yB, { align: 'right' });
+
+            pdf.setFillColor(230, 230, 230);
+            pdf.rect(20, yB + 2, 165, 4, 'F');
+            pdf.setFillColor(...barColor);
+            pdf.rect(20, yB + 2, 165 * (pct / 100), 4, 'F');
+
+            yB += 16;
+        });
+
+        pdf.addPage();
+        pdf.setFillColor(...VERT);
+        pdf.rect(0, 0, W, 4, 'F');
+
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...VERT);
+        pdf.text('3. RADAR DE MATURITÉ', 20, 20);
+
+        const radarCanvas = document.getElementById('radarChart');
+        if(radarCanvas) {
+            const radarImg = radarCanvas.toDataURL('image/png');
+            pdf.addImage(radarImg, 'PNG', 25, 30, 160, 120);
+        }
+
+        pdf.addPage();
+        pdf.setFillColor(...VERT);
+        pdf.rect(0, 0, W, 4, 'F');
+
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...VERT);
+        pdf.text('4. COMPATIBILITÉ PAR MARCHÉ', 20, 20);
+
+        let yM = 32;
+        const compatData = calculateMarketCompatibility(scoresParQuestion);
+        compatData.forEach(r => {
+            if(yM > 260) { pdf.addPage(); pdf.setFillColor(...VERT); pdf.rect(0, 0, W, 4, 'F'); yM = 20; }
+
+            let cColor = r.pct < 40 ? [192,57,43] : (r.pct < 65 ? ORANGE : VERT);
+            let verdictM = r.pct < 40 ? "Peu compatible" : (r.pct < 65 ? "À préparer" : "Compatible");
+
+            pdf.setFillColor(...cColor);
+            pdf.rect(20, yM, 2, 18, 'F');
+
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(...NOIR);
+            let label = r.zoneName;
+            if(r.estCible) label += '  ★ CIBLÉ';
+            pdf.text(label, 26, yM + 6);
+
+            pdf.setFontSize(8);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(...GRIS);
+            pdf.text(`(${r.niveau})`, 26, yM + 12);
+
+            pdf.setFontSize(14);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(...cColor);
+            pdf.text(`${r.pct}%`, 175, yM + 8, { align: 'right' });
+            pdf.setFontSize(7);
+            pdf.text(verdictM, 175, yM + 14, { align: 'right' });
+
+            pdf.setFillColor(230, 230, 230);
+            pdf.rect(26, yM + 15, 140, 3, 'F');
+            pdf.setFillColor(...cColor);
+            pdf.rect(26, yM + 15, 140 * (r.pct / 100), 3, 'F');
+
+            yM += 26;
+        });
+
+        pdf.addPage();
+        pdf.setFillColor(...VERT);
+        pdf.rect(0, 0, W, 4, 'F');
+
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...VERT);
+        pdf.text('5. DIAGNOSTIC DÉTAILLÉ', 20, 20);
+
+        let yD = 32;
+        if(savedDiagnosis.length === 0) {
+            pdf.setFontSize(11);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(...VERT);
+            pdf.text('Excellente performance — aucun point bloquant détecté.', 20, yD);
+        } else {
+            savedDiagnosis.forEach(issue => {
+                if(yD > 230) { pdf.addPage(); pdf.setFillColor(...VERT); pdf.rect(0, 0, W, 4, 'F'); yD = 20; }
+
+                let tagColor = issue.type === 'CRITICAL' ? [192,57,43] : ORANGE;
+                let tagLabel = issue.type === 'CRITICAL' ? 'CRITIQUE' : 'À RENFORCER';
+
+                pdf.setFillColor(...tagColor);
+                pdf.roundedRect(160, yD - 4, 30, 7, 1, 1, 'F');
+                pdf.setFontSize(6);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(255, 255, 255);
+                pdf.text(tagLabel, 175, yD, { align: 'center' });
+
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(...NOIR);
+                let titleLines = pdf.splitTextToSize(`Q${issue.qNum}. ${issue.problem}`, 135);
+                pdf.text(titleLines, 20, yD);
+                yD += titleLines.length * 5 + 3;
+
+                pdf.setFontSize(8);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(...VERT);
+                pdf.text('CAUSE / RISQUE :', 20, yD);
+                yD += 4;
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(...GRIS);
+                let whyLines = pdf.splitTextToSize(issue.why, 165);
+                pdf.text(whyLines, 20, yD);
+                yD += whyLines.length * 4 + 3;
+
+                pdf.setFontSize(8);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(...VERT);
+                pdf.text('MESURES CORRECTIVES :', 20, yD);
+                yD += 4;
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(...GRIS);
+                let fixText = issue.fix.replace(/<ul>|<\/ul>/g, '').replace(/<li>/g, '• ').replace(/<\/li>/g, '\n').replace(/<[^>]*>/g, '').trim();
+                let fixLines = pdf.splitTextToSize(fixText, 165);
+                pdf.text(fixLines, 20, yD);
+                yD += fixLines.length * 4 + 4;
+
+                const secteurChoisi = document.getElementById('secteur').value || "Autre";
+                let recoHtml = getContextualReco(secteurChoisi, issue.qNum);
+                if(recoHtml) {
+                    let recoText = recoHtml.replace(/<[^>]*>/g, '').replace(/📍/g, '→').trim();
+                    let recoBlocks = recoText.split('→').filter(Boolean);
+                    recoBlocks.forEach(block => {
+                        if(yD > 260) { pdf.addPage(); pdf.setFillColor(...VERT); pdf.rect(0, 0, W, 4, 'F'); yD = 20; }
+                        let cleanBlock = block.trim();
+                        if(!cleanBlock) return;
+                        pdf.setFillColor(240, 247, 255);
+                        let blockLines = pdf.splitTextToSize('→ ' + cleanBlock, 160);
+                        let blockH = blockLines.length * 4 + 4;
+                        pdf.rect(22, yD - 3, 168, blockH, 'F');
+                        pdf.setFontSize(7);
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.setTextColor(41, 128, 185);
+                        pdf.text(blockLines, 25, yD);
+                        yD += blockH + 2;
+                    });
+                }
+
+                pdf.setDrawColor(220, 220, 220);
+                pdf.line(20, yD, 190, yD);
+                yD += 8;
+            });
+        }
+
+        pdf.addPage();
+        pdf.setFillColor(...VERT);
+        pdf.rect(0, 0, W, 4, 'F');
+
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...VERT);
+        pdf.text('6. PLAN D\'ACTION PRIORISÉ', 20, 20);
+
+        let critiques = savedDiagnosis.filter(d => d.type === 'CRITICAL');
+        let structurants = savedDiagnosis.filter(d => d.type === 'STRUCTURAL');
+
+        let yP = 35;
+
+        pdf.setFillColor(192, 57, 43);
+        pdf.roundedRect(20, yP, 170, 8, 1, 1, 'F');
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(255, 255, 255);
+        pdf.text('COURT TERME (0-3 mois) — Lever les blocages critiques', 25, yP + 6);
+        yP += 14;
+
+        if(critiques.length === 0) {
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(...VERT);
+            pdf.text('Aucun blocage critique détecté.', 25, yP);
+            yP += 10;
+        } else {
+            critiques.forEach((issue, idx) => {
+                if(yP > 260) { pdf.addPage(); pdf.setFillColor(...VERT); pdf.rect(0, 0, W, 4, 'F'); yP = 20; }
+                pdf.setFontSize(9);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(...NOIR);
+                let actionLines = pdf.splitTextToSize(`${idx+1}. Q${issue.qNum} — ${issue.problem}`, 160);
+                pdf.text(actionLines, 25, yP);
+                yP += actionLines.length * 4;
+
+                let fixText = issue.fix.replace(/<ul>|<\/ul>/g, '').replace(/<li>/g, '').replace(/<\/li>/g, ', ').replace(/<[^>]*>/g, '').trim();
+                if(fixText.endsWith(',')) fixText = fixText.slice(0, -1);
+                pdf.setFontSize(8);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(...GRIS);
+                let fixLines = pdf.splitTextToSize('→ ' + fixText, 155);
+                pdf.text(fixLines, 28, yP);
+                yP += fixLines.length * 4 + 5;
+            });
+        }
+
+        yP += 5;
+        if(yP > 230) { pdf.addPage(); pdf.setFillColor(...VERT); pdf.rect(0, 0, W, 4, 'F'); yP = 20; }
+
+        pdf.setFillColor(...ORANGE);
+        pdf.roundedRect(20, yP, 170, 8, 1, 1, 'F');
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(255, 255, 255);
+        pdf.text('MOYEN TERME (3-6 mois) — Renforcer les fondations', 25, yP + 6);
+        yP += 14;
+
+        if(structurants.length === 0) {
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(...VERT);
+            pdf.text('Aucun point structurant à renforcer.', 25, yP);
+            yP += 10;
+        } else {
+            structurants.forEach((issue, idx) => {
+                if(yP > 260) { pdf.addPage(); pdf.setFillColor(...VERT); pdf.rect(0, 0, W, 4, 'F'); yP = 20; }
+                pdf.setFontSize(9);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(...NOIR);
+                let actionLines = pdf.splitTextToSize(`${idx+1}. Q${issue.qNum} — ${issue.problem}`, 160);
+                pdf.text(actionLines, 25, yP);
+                yP += actionLines.length * 4;
+
+                let fixText = issue.fix.replace(/<ul>|<\/ul>/g, '').replace(/<li>/g, '').replace(/<\/li>/g, ', ').replace(/<[^>]*>/g, '').trim();
+                if(fixText.endsWith(',')) fixText = fixText.slice(0, -1);
+                pdf.setFontSize(8);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(...GRIS);
+                let fixLines = pdf.splitTextToSize('→ ' + fixText, 155);
+                pdf.text(fixLines, 28, yP);
+                yP += fixLines.length * 4 + 5;
+            });
+        }
+
+        const totalPages = pdf.getNumberOfPages();
+        for(let i = 2; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(7);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(180, 180, 180);
+            pdf.text(`Diagnostic Export — ${nomEntreprise} — ${dateJour}`, 20, H - 8);
+            pdf.text(`Page ${i - 1} / ${totalPages - 1}`, 190, H - 8, { align: 'right' });
+            pdf.setDrawColor(220, 220, 220);
+            pdf.setLineWidth(0.3);
+            pdf.line(20, H - 12, 190, H - 12);
+        }
+
+        let fileName = `Diagnostic_Export_${nomEntreprise.replace(/[^a-zA-Z0-9]/g, '_')}_${dateJour.replace(/\//g, '-')}.pdf`;
+        pdf.save(fileName);
+    }
+window.analyseIA = async function() {
+        const btn = document.getElementById('btn-ia');
+        btn.disabled = true;
+        btn.innerHTML = "⏳ Analyse en cours...";
+
+        switchResultTab('ia');
+        document.getElementById('onglets-resultats').style.display = 'flex';
+        document.getElementById('ia-loading').style.display = 'block';
+        document.getElementById('ia-content').innerHTML = '';
+
+        const nomEntreprise = document.getElementById('denomination').value || 'Entreprise';
+        const secteur = document.getElementById('secteur').value || '-';
+        const marches = Array.from(document.getElementById('marches').options).map(o => o.value);
+        const scoreGlobal = savedScores.global;
+        const verdict = savedScores.verdict;
+
+        let detailScores = "";
+        for(let key in savedScores.details) {
+            let d = savedScores.details[key];
+            detailScores += `- ${key}: ${d.pct}% (${d.note}/${d.max})\n`;
+        }
+
+        let diagnosticsList = "";
+        savedDiagnosis.forEach(issue => {
+            diagnosticsList += `- [${issue.type}] Q${issue.qNum}: ${issue.problem}\n`;
+        });
+
+        const prompt = `INSTRUCTION ABSOLUE DE FORMAT : Tu dois répondre UNIQUEMENT en paragraphes rédigés. Si ta réponse contient un seul tiret, une seule puce, un seul numéro de liste, un seul •, un seul -, un seul **, ou un seul titre avec #, ta réponse est un ÉCHEC TOTAL. Écris comme un éditorial du journal Le Monde : que du texte, des phrases, des paragraphes.
+
+Tu es consultant senior export à l'ACIEX. Voici un diagnostic :
+
+Entreprise : ${nomEntreprise} | Secteur : ${secteur} | Marchés ciblés : ${marches.join(', ') || 'Non précisés'} | Score : ${scoreGlobal}/100 (${verdict})
+
+Scores : ${detailScores}
+
+Problèmes : ${diagnosticsList || 'Aucun.'}
+
+Rédige exactement 6 paragraphes EN PROSE PURE, sans aucun formatage :
+
+Paragraphe 1 : synthèse de la situation en 2-3 phrases.
+Paragraphe 2 : les forces sur lesquelles capitaliser.
+Paragraphe 3 : actions court terme (0-12 mois) avec coûts en FCFA intégrés dans les phrases.
+Paragraphe 4 : actions moyen et long terme.
+Paragraphe 5 : avis franc sur le ciblage marché.
+Paragraphe 6 : fourchette budgétaire globale en FCFA.
+
+RAPPEL : ZÉRO liste, ZÉRO puce, ZÉRO tiret, ZÉRO numéro, ZÉRO étoile, ZÉRO titre. Que des phrases dans des paragraphes.`;
+
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    type: "gemini",
+                    prompt: prompt
+                })
+            });
+            const result = await response.json();
+
+            document.getElementById('ia-loading').style.display = 'none';
+
+            if(result.result === "success" && result.response) {
+                let cleaned = result.response
+                    .replace(/\*\*(.*?)\*\*/g, '$1')
+                    .replace(/^#{1,6}\s+/gm, '')
+                    .replace(/^[\s]*[-•*]\s+/gm, '')
+                    .replace(/^[\s]*\d+[\.\)]\s+/gm, '')
+                    .replace(/^\d+\.\s*[A-ZÉÈÊÀÂÔÎÏÙÛ\s\/]+\n/gm, '')
+                    .replace(/^[A-ZÉÈÊÀÂÔÎÏÙÛ\s\/]{5,}:\s*/gm, '')
+                    .replace(/^\s*:\s*/gm, '')
+                    .replace(/\n{3,}/g, '\n\n')
+                    .trim();
+                let html = cleaned
+                    .split(/\n\n+/)
+                    .filter(p => p.trim().length > 20)
+                    .map(p => '<p style="margin-bottom:15px; text-align:justify;">' + p.replace(/\n/g, ' ').trim() + '</p>')
+                    .join('');
+
+                document.getElementById('ia-content').innerHTML = `
+                    <div style="line-height:1.8; color:#333; font-size:0.95rem;">
+                        ${html}
+                    </div>
+                    <div style="margin-top:20px; padding:10px; background:#f0f0f0; border-radius:6px; font-size:0.8rem; color:#999; text-align:center;">
+                        Analyse générée par IA — À titre indicatif, ne se substitue pas à un conseil professionnel.
+                    </div>`;
+            } else {
+                document.getElementById('ia-content').innerHTML = `<div style="color:#c0392b; padding:20px; text-align:center;">⚠️ Erreur lors de l'analyse. Réessayez dans quelques instants.</div>`;
+            }
+        } catch(err) {
+            document.getElementById('ia-loading').style.display = 'none';
+            document.getElementById('ia-content').innerHTML = `<div style="color:#c0392b; padding:20px; text-align:center;">⚠️ Erreur de connexion : ${err.message}</div>`;
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = "Analyse IA";
+    }
+    window.retourTest = function() {
+        estVerrouille = false;
+
+        document.getElementById('step-ind-1').style.cursor = 'pointer';
+        document.getElementById('step-ind-1').style.opacity = '1';
+        document.getElementById('step-ind-2').style.cursor = 'pointer';
+        document.getElementById('step-ind-2').style.opacity = '1';
+
+        document.getElementById(`view-3`).classList.remove('active');
+        document.getElementById(`step-ind-3`).classList.remove('active');
+
+        currentStep = 2;
+        document.getElementById(`view-2`).classList.add('active');
+        document.getElementById(`step-ind-2`).classList.add('active');
+
+        document.getElementById('btn-prev').style.display = 'block';
+        document.getElementById('btn-next').style.display = 'block';
+        document.getElementById('btn-next').innerText = "Résultat >>";
+
+        window.scrollTo(0,0);
+    }
+
     let currentStep = 1;
+    let estVerrouille = false;
+
+    window.naviguerOnglet = function(cible) {
+        if(estVerrouille) return;
+        if(cible === currentStep) return;
+
+        if(currentStep === 1 && cible === 2) {
+            changeStep(1);
+        } else if(currentStep === 2 && cible === 1) {
+            changeStep(-1);
+        }
+    }
     function changeStep(n) {
-        // VALIDATION AVANT DE PASSER A L'ETAPE SUIVANTE
+        if(n === 1 && currentStep === 1) {
+            const isAutre = document.querySelector('input[name="juridique"][value="Autre"]')?.checked;
+            if(isAutre && document.getElementById('juridique-autre').value.trim() === "") {
+                alert("Veuillez préciser la forme juridique.");
+                return;
+            }
+
+            const newFields = ['genre', 'age', 'email', 'telephone', 'emp_declares', 'emp_non_declares'];
+            for(let fieldId of newFields) {
+                if(document.getElementById(fieldId).value.trim() === "") {
+                    alert("Veuillez remplir toutes les informations du dirigeant, les contacts et le nombre d'employés.");
+                    return;
+                }
+            }
+
+            const emailVal = document.getElementById('email').value;
+            if(!emailVal.includes('@')) {
+                alert("L'adresse email n'est pas valide (il manque le symbole @).");
+                return;
+            }
+        }
         if(n === 1 && currentStep === 2) {
             if(!validateQuestionnaire()) return;
+
+            let confirmation = confirm("En appuyant sur OK (ou Oui), vous confirmez l'exactitude des informations renseignées.");
+            if(!confirmation) return;
         }
 
         document.getElementById(`view-${currentStep}`).classList.remove('active');
         document.getElementById(`step-ind-${currentStep}`).classList.remove('active');
         currentStep += n;
         if(currentStep > 3) currentStep = 3; if(currentStep < 1) currentStep = 1;
-        
+
         document.getElementById(`view-${currentStep}`).classList.add('active');
         document.getElementById(`step-ind-${currentStep}`).classList.add('active');
-        
+
         const btnPrev = document.getElementById('btn-prev');
         if(currentStep === 1 || currentStep === 3) {
             btnPrev.style.display = 'none';
@@ -909,17 +2694,57 @@
             btnPrev.style.display = 'block';
         }
 
-        if(currentStep===3) { 
-            document.getElementById('btn-next').style.display = 'none'; 
-            calculateResults(); 
-        } else { 
-            document.getElementById('btn-next').style.display = 'block'; 
-            document.getElementById('btn-next').innerText = "Suivant >>"; 
+        if(currentStep===3) {
+            estVerrouille = true;
+            document.getElementById('step-ind-1').style.cursor = 'not-allowed';
+            document.getElementById('step-ind-1').style.opacity = '0.3';
+            document.getElementById('step-ind-2').style.cursor = 'not-allowed';
+            document.getElementById('step-ind-2').style.opacity = '0.3';
+
+            document.getElementById('btn-next').style.display = 'none';
+
+            calculateResults();
+
+            saveToGoogleSheets();
+
+            setTimeout(() => {
+                if(confirm("Diagnostic généré et sauvegardé avec succès ! Souhaitez-vous télécharger le rapport complet en PDF ?")) {
+                    generatePDF();
+                }
+            }, 1000);
+        } else if (currentStep === 2) {
+            document.getElementById('btn-next').style.display = 'block';
+            document.getElementById('btn-next').innerText = "Résultat >>";
+        } else {
+            document.getElementById('btn-next').style.display = 'block';
+            document.getElementById('btn-next').innerText = "Suivant >>";
         }
         window.scrollTo(0,0);
     }
     init();
+window.openHelp = function(qNum) {
+        document.getElementById('helpTextContent').innerText = HELP_TEXTS[qNum];
+        document.getElementById('helpModal').style.display = 'flex';
+    }
+    window.closeHelp = function() {
+        document.getElementById('helpModal').style.display = 'none';
+    }
+window.switchResultTab = function(tabName) {
+        document.getElementById('tab-synthese').style.display = tabName === 'synthese' ? 'grid' : 'none';
+        document.getElementById('tab-analyse').style.display = tabName === 'analyse' ? 'block' : 'none';
+        document.getElementById('tab-ia').style.display = tabName === 'ia' ? 'block' : 'none';
+
+        document.getElementById('btn-tab-synthese').classList.toggle('active', tabName === 'synthese');
+        document.getElementById('btn-tab-analyse').classList.toggle('active', tabName === 'analyse');
+        document.getElementById('btn-tab-ia').classList.toggle('active', tabName === 'ia');
+    }
 </script>
+<div id="helpModal" class="modal-overlay" onclick="closeHelp()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <h3>Explication de la question</h3>
+        <p id="helpTextContent"></p>
+        <button class="modal-btn" onclick="closeHelp()">J'ai compris</button>
+    </div>
+</div>
 </body>
 </html>
-
